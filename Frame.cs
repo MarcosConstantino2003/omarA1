@@ -1,8 +1,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Runtime.Versioning;
-[SupportedOSPlatform("windows")]
 
 public class Frame : Form
 {
@@ -18,7 +16,6 @@ public class Frame : Form
         base.OnPaint(e);
         Graphics g = e.Graphics;
 
-        // Ejemplo de renderizado
-        g.FillRectangle(Brushes.CornflowerBlue, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
+        // El dibujo de objetos será manejado por el método FramePaint en Game
     }
 }
