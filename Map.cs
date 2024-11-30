@@ -1,40 +1,48 @@
 public class Map
 {
-    private List<Diamond> greenDiamonds; // Rombos verdes
-    private List<Diamond> redDiamonds; // Rombos rojos
+    private List<Diamond> greenDiamonds; 
+    private List<Diamond> purpleDiamonds; // 
     private List<Enemy> enemies;
     private List<PointF> spawnMarkers; 
-
+    private List<Heart> hearts; // Lista de corazones
     private Random random;
     private System.Windows.Forms.Timer greenDiamondTimer;
-    private System.Windows.Forms.Timer redDiamondTimer;
+    private System.Windows.Forms.Timer purpleDiamondTimer;
     private System.Windows.Forms.Timer enemyTimer;
+    private System.Windows.Forms.Timer heartTimer;
     private Omar omar;
     public Map(Omar omar)
     {
         this.omar = omar;
         greenDiamonds = new List<Diamond>();
-        redDiamonds = new List<Diamond>();
+        purpleDiamonds = new List<Diamond>();
         enemies = new List<Enemy>();
         spawnMarkers = new List<PointF>(); 
+        hearts = new List<Heart>(); // Inicializar la lista de corazones
         random = new Random();
-        // Temporizador para generar rombos verdes cada 3 segundos
+        // Temporizador para generar rombos verdes cada 6 segundos
         greenDiamondTimer = new System.Windows.Forms.Timer();
-        greenDiamondTimer.Interval = 3000; // 3 segundos
+        greenDiamondTimer.Interval = 6000; 
         greenDiamondTimer.Tick += SpawnGreenDiamonds;
         greenDiamondTimer.Start();
 
-        // Temporizador para generar rombos rojos cada 5 segundos
-        redDiamondTimer = new System.Windows.Forms.Timer();
-        redDiamondTimer.Interval = 5000; // 5 segundos
-        redDiamondTimer.Tick += SpawnRedDiamonds;
-        redDiamondTimer.Start();
+        // Temporizador para generar rombos rojos cada 12 segundos
+        purpleDiamondTimer = new System.Windows.Forms.Timer();
+        purpleDiamondTimer.Interval = 12000; 
+        purpleDiamondTimer.Tick += SpawnPurpleDiamonds;
+        purpleDiamondTimer.Start();
 
-         // Temporizador para generar enemigos cada 5 segundos
+         // Temporizador para generar enemigos cada 4 segundos
         enemyTimer = new System.Windows.Forms.Timer();
-        enemyTimer.Interval = 6000; // 5 segundos
+        enemyTimer.Interval = 4000; 
         enemyTimer.Tick += SpawnEnemies;
         enemyTimer.Start();
+
+        // Temporizador para generar corazones cada 8 segundos
+        heartTimer = new System.Windows.Forms.Timer();
+        heartTimer.Interval = 8000;  // 8 segundos
+        heartTimer.Tick += SpawnHearts;
+        heartTimer.Start();
     }
 
     private void SpawnGreenDiamonds(object? sender, EventArgs e)
@@ -47,14 +55,14 @@ public class Map
         greenDiamonds.Add(new Diamond(new PointF(x, y), Color.Green, 20));
     }
 
-    private void SpawnRedDiamonds(object? sender, EventArgs e)
+    private void SpawnPurpleDiamonds(object? sender, EventArgs e)
     {
         // Generar rombos rojos en posiciones aleatorias
         float x = random.Next(50, 750); // Posición aleatoria en el rango X
         float y = random.Next(50, 550); // Posición aleatoria en el rango Y
 
         // Añadir rombos rojos
-        redDiamonds.Add(new Diamond(new PointF(x, y), Color.Red, 20));
+        purpleDiamonds.Add(new Diamond(new PointF(x, y), Color.Purple, 20));
     }
 
      // Generar enemigos
@@ -107,6 +115,16 @@ public class Map
         return distance < minimumDistance;
     }
 
+    private void SpawnHearts(object? sender, EventArgs e)
+    {
+        // Generar corazones en posiciones aleatorias
+        float x = random.Next(50, 750); // Posición aleatoria en el rango X
+        float y = random.Next(50, 550); // Posición aleatoria en el rango Y
+
+        // Añadir corazón a la lista
+        hearts.Add(new Heart(new PointF(x, y), Color.Red, 20));
+    }   
+
     // Método para manejar la lógica de las colisiones con los rombos
     public void CheckCollisions()
     {
@@ -122,12 +140,12 @@ public class Map
         }
 
         // Revisar las colisiones con los rombos rojos
-        foreach (var redDiamond in redDiamonds)
+        foreach (var redDiamond in purpleDiamonds)
         {
             if (omar.IsCollidingWithDiamond(redDiamond))
             {
                 omar.DecreaseSpeed(0.5f);  // Disminuye 0.5 de velocidad por diamante rojo
-                redDiamonds.Remove(redDiamond); // Eliminar el rombo rojo al ser tocado
+                purpleDiamonds.Remove(redDiamond); // Eliminar el rombo rojo al ser tocado
                 break; // Salir del ciclo ya que no es necesario seguir buscando
             }
         }
@@ -141,6 +159,16 @@ public class Map
                 break;
             }
         }
+         // Revisar las colisiones con los corazones
+    foreach (var heart in hearts)
+    {
+        if (omar.IsCollidingWithHeart(heart))
+        {
+            omar.IncreaseHP(4);  // Aumenta 4 HP por corazón recogido
+            hearts.Remove(heart); // Eliminar el corazón al ser tocado
+            break; // Salir del ciclo ya que no es necesario seguir buscando
+        }
+    }
     }
 
     // Método para mover los enemigos hacia Omar
@@ -161,7 +189,7 @@ public class Map
         }
 
         // Dibujar los rombos rojos
-        foreach (var diamond in redDiamonds)
+        foreach (var diamond in purpleDiamonds)
         {
             diamond.Draw(g);
         }
@@ -172,6 +200,11 @@ public class Map
         foreach (var marker in spawnMarkers)
         {
             DrawSpawnMarker(g, marker);
+        }
+          // Dibujar los corazones
+        foreach (var heart in hearts)
+        {
+            heart.Draw(g);
         }
     }
     private void DrawSpawnMarker(Graphics g, PointF position)

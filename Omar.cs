@@ -3,23 +3,27 @@ public class Omar
     public float X { get; set; }
     public float Y { get; set; }
     public float Size { get; set; }
+    public float MaxSpeed { get; set; } 
     public float Speed { get; set; }
-    public float VelocityX { get; set; } // Velocidad en X
-    public float VelocityY { get; set; } // Velocidad en Y
+    public float VelocityX { get; set; } 
+    public float VelocityY { get; set; } 
+    public float MaxHP { get; set; }
     public float HP { get; set; }
-    private bool isTakingDamage; // Indica si Omar está en estado de "daño"
-    private DateTime damageStartTime; // Tiempo en el que Omar recibió daño
-    private bool isRed; // Indica si Omar debe dibujarse en rojo o blanco
+    private bool isTakingDamage; 
+    private DateTime damageStartTime; 
+    private bool isRed; 
 
     public Omar(float x, float y, float size)
     {
         X = x;
         Y = y;
         Size = size;
-        Speed = 3; // Velocidad inicial de Omar
+        Speed = 4;
+        MaxSpeed = 9; 
         VelocityX = 0;
         VelocityY = 0;
-        HP = 10;  // HP inicial de 10
+        HP = 15;
+        MaxHP = 15;
     }
 
         public void MoveSmooth(float deltaX, float deltaY)
@@ -94,12 +98,32 @@ public class Omar
                 Y + Size/2> enemy.Position.Y);
     }
 
+    // Método para verificar colisiones con los corazones
+    public bool IsCollidingWithHeart(Heart heart)
+    {
+        // Verificar si las posiciones de Omar y el corazón se superponen
+        return (X < heart.Position.X + heart.Size &&
+                X + Size > heart.Position.X &&
+                Y < heart.Position.Y + heart.Size &&
+                Y + Size > heart.Position.Y);
+    }
+
+    // Método para aumentar los HP de Omar
+    public void IncreaseHP(int amount)
+    {
+        HP += amount;
+        if (HP > MaxHP) // Asegurar que no supere el max HP
+        {
+            HP = MaxHP;
+        }
+    }
+
      public void IncreaseSpeed(float amount)
     {
-        Speed += amount;
-        if (Speed > 8) // Límite de velocidad
+         Speed += amount;
+        if (Speed > MaxSpeed) // Límite de velocidad
         {
-            Speed = 8;
+            Speed = MaxSpeed;
         }
     }
 

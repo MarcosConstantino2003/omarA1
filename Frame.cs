@@ -32,18 +32,23 @@ public void DrawStatistics(Graphics g, Omar omar)
     string speedText = $"Speed: {omar.Speed}";
     SizeF speedSize = g.MeasureString(speedText, font);
     
-    // Cambiar el color del texto a rojo oscuro si la velocidad es 8
-    Brush speedBrush = (omar.Speed == 8) ? Brushes.DarkRed : whiteBrush;
+    // Cambiar el color del texto a rojo oscuro si la velocidad es igual a MaxSpeed
+    Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
     
     // Dibujar el texto con borde negro
     g.DrawString(speedText, font, blackBrush, this.ClientSize.Width - speedSize.Width - 10, 10);
     g.DrawString(speedText, font, speedBrush, this.ClientSize.Width - speedSize.Width - 9, 9); // Borde negro
 
     // Dibujar HP
-    string hpText = $"HP: {omar.HP}";
+    string hpText = $"HP: {omar.HP}/{omar.MaxHP}";
     SizeF hpSize = g.MeasureString(hpText, font);
+    
+    // Cambiar color si HP está lleno
+    Brush hpBrush = (omar.HP == omar.MaxHP) ? Brushes.DarkRed : whiteBrush;
+
+    // Dibujar el texto con borde negro
     g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 30);
-    g.DrawString(hpText, font, whiteBrush, this.ClientSize.Width - hpSize.Width - 9, 29); // Borde negro
+    g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 29); // Borde negro
 }
 
  // Método para dibujar el mensaje de derrota
