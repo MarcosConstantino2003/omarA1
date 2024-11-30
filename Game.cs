@@ -5,7 +5,7 @@ using System.Windows.Forms;
 public class Game
 {
     private Frame frame;
-    private Omar omar;
+    public Omar omar;
     private bool isInGame;
     private bool isGameOver;
     private System.Windows.Forms.Timer gameTimer; // El temporizador para actualizar la pantalla
@@ -18,7 +18,7 @@ public class Game
     {
         frame = new Frame();
         omar = new Omar(100, 100, 40); // Inicializa a Omar con tamaño 40
-        map = new Map(); // Inicializamos el mapa
+        map = new Map(omar); // Inicializamos el mapa
         isInGame = false; // Inicialmente en el menú
         pressedKeys = new HashSet<Keys>(); // Inicializar el HashSet
         isFullScreen = false; // Inicialmente no está en pantalla completa
@@ -51,7 +51,7 @@ public class Game
     private void RestartGame()
     {
         omar = new Omar(100, 100, 40); // Reinicia a Omar
-        map = new Map(); // Reinicia el mapa
+        map = new Map(omar); // Reinicia el mapa
         isInGame = true; // Comienza el juego
         isGameOver = false; // Reinicia el estado de Game Over
         frame.BackColor = Color.Gray; // Fondo gris
@@ -95,7 +95,7 @@ public class Game
             // Actualizar la posición de Omar suavemente en cada "tick"
             omar.UpdatePosition();
             // Revisar las colisiones
-            map.CheckCollisions(omar);
+            map.CheckCollisions();
             // Redibujar la pantalla constantemente
             frame.Invalidate();
               if (omar.HP <= 0)
@@ -186,7 +186,7 @@ public class Game
             // Dibuja a Omar solo si estamos en el juego
             omar.Draw(e.Graphics);
             // Mover a los enemigos hacia Omar
-            map.UpdateEnemies(omar);
+            map.UpdateEnemies();
             // Dibuja las estadísticas (en este caso, la velocidad)
             frame.DrawStatistics(e.Graphics, omar);
            

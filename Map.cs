@@ -3,18 +3,21 @@ public class Map
     private List<Diamond> greenDiamonds; // Rombos verdes
     private List<Diamond> redDiamonds; // Rombos rojos
     private List<Enemy> enemies;
+    private List<PointF> spawnMarkers; 
+
     private Random random;
     private System.Windows.Forms.Timer greenDiamondTimer;
     private System.Windows.Forms.Timer redDiamondTimer;
     private System.Windows.Forms.Timer enemyTimer;
-
-    public Map()
+    private Omar omar;
+    public Map(Omar omar)
     {
+        this.omar = omar;
         greenDiamonds = new List<Diamond>();
         redDiamonds = new List<Diamond>();
         enemies = new List<Enemy>();
+        spawnMarkers = new List<PointF>(); 
         random = new Random();
-
         // Temporizador para generar rombos verdes cada 3 segundos
         greenDiamondTimer = new System.Windows.Forms.Timer();
         greenDiamondTimer.Interval = 3000; // 3 segundos
@@ -55,17 +58,57 @@ public class Map
     }
 
      // Generar enemigos
-    private void SpawnEnemies(object? sender, EventArgs e)
+    private async void SpawnEnemies(object? sender, EventArgs e)
     {
-        float x = random.Next(50, 750); 
-        float y = random.Next(50, 550); 
+    // Generar un número aleatorio de enemigos entre 4 y 8
+    int numberOfEnemies = random.Next(4, 9);
 
-        // Crear un enemigo con color marrón
-        enemies.Add(new Enemy(new PointF(x, y), Color.Brown, 30));
+    // Determinar un punto central válido que no esté cerca de Omar
+    PointF centerPoint;
+    do
+    {
+        float centerX = random.Next(100, 700); // Evitamos los bordes
+        float centerY = random.Next(100, 500);
+        centerPoint = new PointF(centerX, centerY);
+    }
+    while (IsTooCloseToOmar(centerPoint)); // Asegurar que el punto no esté cerca de Omar
+    spawnMarkers.Add(centerPoint);
+    await Task.Delay(400); // Tiempo entre enemigos
+    // Spawnear los enemigos con una leve diferencia de tiempo
+    for (int i = 0; i < numberOfEnemies; i++)
+    {
+        // Generar un desplazamiento pequeño para cada enemigo (cerca del centro)
+        float offsetX = random.Next(-30, 31); // Hasta 30px alrededor del centro
+        float offsetY = random.Next(-30, 31);
+
+        float x = Math.Clamp(centerPoint.X + offsetX, 50, 750); // Aseguramos que no salgan de los límites
+        float y = Math.Clamp(centerPoint.Y + offsetY, 50, 550);
+
+         PointF spawnPoint = new PointF(x, y);
+
+        // Añadir una marca de spawn y esperar 1 segundo
+
+        // Crear y añadir el enemigo
+        enemies.Add(new Enemy(spawnPoint, Color.Brown, 30));
+
+        // Quitar la marca de spawn
+        spawnMarkers.Remove(centerPoint);
+        await Task.Delay(200); // Tiempo entre enemigos
+    }
+    }
+
+    // Método para verificar si el punto está demasiado cerca de Omar
+    private bool IsTooCloseToOmar(PointF point)
+    {
+        const float minimumDistance = 100; // Distancia mínima permitida
+        float dx = point.X - omar.X; // Diferencia en X
+        float dy = point.Y - omar.Y; // Diferencia en Y
+        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+        return distance < minimumDistance;
     }
 
     // Método para manejar la lógica de las colisiones con los rombos
-    public void CheckCollisions(Omar omar)
+    public void CheckCollisions()
     {
         // Revisar las colisiones con los rombos verdes
         foreach (var greenDiamond in greenDiamonds)
@@ -93,7 +136,7 @@ public class Map
         {
             if (omar.IsCollidingWithEnemy(enemy))
             {
-                omar.DecreaseHP(10);  // Reduce 1 HP por colisión con enemigo
+                omar.DecreaseHP(4);  // Reduce 1 HP por colisión con enemigo
                 enemies.Remove(enemy);  // Eliminar al enemigo después de la colisión
                 break;
             }
@@ -101,7 +144,7 @@ public class Map
     }
 
     // Método para mover los enemigos hacia Omar
-    public void UpdateEnemies(Omar omar)
+    public void UpdateEnemies()
     {
         foreach (var enemy in enemies)
         {
@@ -126,5 +169,17 @@ public class Map
         {
             enemy.Draw(g); // Dibuja cada enemigo
         }
+        foreach (var marker in spawnMarkers)
+        {
+            DrawSpawnMarker(g, marker);
+        }
+    }
+    private void DrawSpawnMarker(Graphics g, PointF position)
+    {
+        Pen blackPen = new Pen(Color.Black, 2);
+
+        // Dibujar una "X" centrada en la posición
+        g.DrawLine(blackPen, position.X - 10, position.Y - 10, position.X + 10, position.Y + 10);
+        g.DrawLine(blackPen, position.X - 10, position.Y + 10, position.X + 10, position.Y - 10);
     }
 }

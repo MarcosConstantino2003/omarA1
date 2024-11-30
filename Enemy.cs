@@ -4,6 +4,8 @@ public class Enemy
     public Color Color { get; set; }
     public float Size { get; set; }
     public float Speed { get; set; } // Velocidad de movimiento del enemigo
+    public int HP { get; private set; } // Nuevo atributo HP
+
 
 
     public Enemy(PointF position, Color color, float size)
@@ -12,6 +14,7 @@ public class Enemy
         Color = color;
         Size = size;
         Speed = 1.0f;
+        HP = 5; // Inicializar con 5 puntos de vida
     }
 
     public void MoveTowardsOmar(Omar omar)
@@ -34,6 +37,11 @@ public class Enemy
             Position = new PointF(Position.X + deltaX * Speed, Position.Y + deltaY * Speed);
         }
     }
+
+    public void TakeDamage(int damage)
+    {
+        HP = Math.Max(0, HP - damage); // Reducir HP, asegurando que no sea menor a 0
+    }
     
     public void Draw(Graphics g)
     {
@@ -45,5 +53,14 @@ public class Enemy
 
         // Dibujar borde negro
         g.DrawRectangle(blackPen, Position.X, Position.Y, Size, Size);
+
+        // Dibujar el HP sobre el enemigo
+        string hpText = $"HP: {HP}";
+        using (Font font = new Font("Arial", 10, FontStyle.Bold)){
+            SizeF textSize = g.MeasureString(hpText, font);
+            float textX = Position.X + (Size - textSize.Width) / 2; // Centrar el texto horizontalmente
+            float textY = Position.Y - textSize.Height - 5; // Justo arriba del cuadrado
+            g.DrawString(hpText, font, Brushes.White, textX, textY);
     }
+}
 }
