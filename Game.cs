@@ -152,10 +152,12 @@ public class Game
     {   
         if (isInGame)
         {
-             // Dibuja el mapa
+            // Dibuja el mapa
             map.Draw(e.Graphics);
             // Dibuja a Omar solo si estamos en el juego
             omar.Draw(e.Graphics);
+            // Mover a los enemigos hacia Omar
+            map.UpdateEnemies(omar);
             // Dibuja las estadísticas (en este caso, la velocidad)
             frame.DrawStatistics(e.Graphics, omar);
            
