@@ -83,15 +83,16 @@ public class Omar
     }
 
      // Método de colisión con el enemigo
-    public bool IsCollidingWithEnemy(Enemy enemy)
+  public bool IsCollidingWithEnemy(Enemy enemy)
     {
-        return (X < enemy.Position.X + enemy.Size &&
-                X + Size > enemy.Position.X &&
-                Y < enemy.Position.Y + enemy.Size &&
-                Y + Size > enemy.Position.Y);
+        // Desplazar ligeramente las coordenadas de Omar hacia la derecha en la colisión
+        float offsetX = -Size/2;  // Este valor puede ser ajustado según sea necesario
+
+        return (X + offsetX < enemy.Position.X + enemy.Size &&
+                X + Size + offsetX > enemy.Position.X &&
+                Y - Size/2 < enemy.Position.Y + enemy.Size &&
+                Y + Size/2> enemy.Position.Y);
     }
-
-
 
      public void IncreaseSpeed(float amount)
     {
