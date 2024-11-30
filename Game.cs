@@ -7,20 +7,30 @@ public class Game
     private Frame frame;
     private Omar omar;
     private bool isInGame;
+    private System.Windows.Forms.Timer gameTimer; // El temporizador para actualizar la pantalla
+    private HashSet<Keys> pressedKeys; // Usaremos un HashSet para almacenar las teclas presionadas
+    private Map map;
 
     public Game()
     {
         frame = new Frame();
-        omar = new Omar(100, 100, 20); // Inicia Omar en (100, 100) con tamaño 20
+        omar = new Omar(100, 100, 40); // Inicializa a Omar con tamaño 40
+        map = new Map(); // Inicializamos el mapa
         isInGame = false; // Inicialmente en el menú
+        pressedKeys = new HashSet<Keys>(); // Inicializar el HashSet
 
-        // Suscribimos el evento de teclas presionadas para detectar Enter y Escape
+        // Suscribimos los eventos de teclas presionadas y liberadas
         frame.KeyDown += new KeyEventHandler(OnKeyDown);
+        frame.KeyUp += new KeyEventHandler(OnKeyUp);
         
         // Permitir el enfoque del formulario para detectar las teclas
         frame.KeyPreview = true;
-        
         frame.Paint += new PaintEventHandler(FramePaint);
+
+          // Inicializamos el temporizador
+        gameTimer = new System.Windows.Forms.Timer(); // Especificamos el namespace completo
+        gameTimer.Interval = 16; // Aproximadamente 60 FPS
+        gameTimer.Tick += GameTimer_Tick;   
     }
 
     // Método para cambiar al estado de juego
@@ -28,6 +38,7 @@ public class Game
     {
         isInGame = true;
         frame.BackColor = Color.Gray; // Cambiar el fondo a gris
+        gameTimer.Start(); // Iniciar el temporizador
         frame.Invalidate(); // Forzar un repintado de la ventana
     }
 
@@ -36,41 +47,83 @@ public class Game
     {
         isInGame = false;
         frame.BackColor = Color.White; // Fondo blanco en el menú
+        gameTimer.Stop(); // Detener el temporizador
         frame.Invalidate(); // Forzar un repintado de la ventana
     }
 
+  // Método que se llama cada vez que el temporizador "tickea" (cada 16 ms)
+    private void GameTimer_Tick(object? sender, EventArgs e)
+    {
+        if (isInGame)
+        {
+            // Revisar las colisiones
+            map.CheckCollisions(omar);
+            // Redibujar la pantalla constantemente
+            frame.Invalidate();
+        }
+    }
     // Detecta la tecla presionada y cambia el estado del juego
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.Enter)
+        if (!pressedKeys.Contains(e.KeyCode))
         {
-            if (!isInGame)
+            pressedKeys.Add(e.KeyCode); // Agregar la tecla al HashSet cuando se presiona
+        }
+
+        if (isInGame)
+        {
+            int dx = 0;
+            int dy = 0;
+
+            // Usamos las teclas presionadas para mover a Omar
+            if (pressedKeys.Contains(Keys.W)) dy = -1; // Mover hacia arriba
+            if (pressedKeys.Contains(Keys.S)) dy = 1;  // Mover hacia abajo
+            if (pressedKeys.Contains(Keys.A)) dx = -1; // Mover hacia la izquierda
+            if (pressedKeys.Contains(Keys.D)) dx = 1;  // Mover hacia la derecha
+
+            // Mover a Omar en las 8 direcciones usando el valor de speed
+            omar.Move(dx * omar.Speed, dy * omar.Speed);
+            
+             // Escape: Regresar al menú cuando estamos en el juego
+            if (e.KeyCode == Keys.Escape)
             {
-                // Iniciar el juego al presionar Enter
+                ShowMenu(); // Volver al menú
+            }
+        }
+        else
+        {
+            // Si no está en el juego, solo manejamos las teclas de Enter y Escape
+            if (e.KeyCode == Keys.Enter)
+            {
                 StartGame();
             }
-        }
-        else if (e.KeyCode == Keys.Escape)
-        {
-            if (isInGame)
+            else if (e.KeyCode == Keys.Escape)
             {
-                // Volver al menú si estamos en el juego
-                ShowMenu();
+                Application.Exit();
             }
-              else
-        {
-            // Cerrar la aplicación si estamos en el menú
-            Application.Exit();
         }
-            }
     }
+
+    private void OnKeyUp(object? sender, KeyEventArgs e)
+    {
+        if (pressedKeys.Contains(e.KeyCode))
+        {
+            pressedKeys.Remove(e.KeyCode); // Eliminar la tecla del HashSet cuando se deja de presionar
+        }
+    }
+
 
     private void FramePaint(object? sender, PaintEventArgs e)
     {
         if (isInGame)
         {
+             // Dibuja el mapa
+            map.Draw(e.Graphics);
             // Dibuja a Omar solo si estamos en el juego
             omar.Draw(e.Graphics);
+            // Dibuja las estadísticas (en este caso, la velocidad)
+            frame.DrawStatistics(e.Graphics, omar);
+           
         }
         else
         {
