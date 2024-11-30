@@ -171,6 +171,28 @@ public class Map
     }
     }
 
+    // Método para encontrar el enemigo más cercano a Omar
+    public Enemy? GetClosestEnemy()
+    {
+        Enemy? closestEnemy = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var enemy in enemies)
+        {
+            float dx = enemy.Position.X - omar.X;
+            float dy = enemy.Position.Y - omar.Y;
+            float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = enemy;
+            }
+        }
+
+        return closestEnemy;
+    }
+
     // Método para mover los enemigos hacia Omar
     public void UpdateEnemies()
     {
@@ -205,6 +227,15 @@ public class Map
         foreach (var heart in hearts)
         {
             heart.Draw(g);
+        }
+        // Obtener el enemigo más cercano a Omar
+        Enemy? closestEnemy = GetClosestEnemy();
+
+        // Verificar si el enemigo más cercano es nulo
+        if (closestEnemy != null)
+        {
+            // Dibujar el triángulo apuntando hacia el enemigo más cercano
+            omar.DrawTriangle(g, closestEnemy);
         }
     }
     private void DrawSpawnMarker(Graphics g, PointF position)

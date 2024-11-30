@@ -144,13 +144,39 @@ public class Omar
         damageStartTime = DateTime.Now;
     }
 
+    public void DrawTriangle(Graphics g, Enemy closestEnemy)
+    {
+        if (closestEnemy == null) return; 
+
+        // Calcular la dirección hacia el enemigo
+        float dx = closestEnemy.Position.X - X;
+        float dy = closestEnemy.Position.Y - Y;
+        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+        // Normalizamos el vector dirección (hacia el enemigo)
+        float directionX = dx / distance;
+        float directionY = dy / distance;
+
+        // Definir la distancia del triángulo respecto a Omar
+        float triangleDistance = 40;  // Aumenta el tamaño del triángulo a 40 píxeles desde Omar
+
+        // Posición del vértice del triángulo (orbitando cerca de Omar)
+        float triangleX = X + directionX * triangleDistance;
+        float triangleY = Y + directionY * triangleDistance - 20;  // Elevar el triángulo 20px hacia arriba
+
+        // Coordenadas de los tres vértices del triángulo
+        PointF p1 = new PointF(triangleX, triangleY);
+        PointF p2 = new PointF(triangleX - 10, triangleY + 20); // Vértice inferior izquierdo, más grande
+        PointF p3 = new PointF(triangleX + 10, triangleY + 20); // Vértice inferior derecho, más grande
+
+        // Dibujar el triángulo apuntando al enemigo más cercano con color azul oscuro
+        g.FillPolygon(Brushes.DarkBlue, new PointF[] { p1, p2, p3 });
+    }
 
     public void Draw(Graphics g)
     {
         Brush brush = isTakingDamage ? (isRed ? Brushes.DarkRed : Brushes.White) : Brushes.White;
         Pen blackPen = new Pen(Color.Black, 2);
-
-        // Dibujar Omar como un círculo
         g.FillEllipse(brush, X - Size / 2, Y - Size / 2, Size, Size);
         g.DrawEllipse(blackPen, X - Size / 2, Y - Size / 2, Size, Size);
     }
