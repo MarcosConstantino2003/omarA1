@@ -1,0 +1,14 @@
+C:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.AssemblyInfoInputs.cache
+C:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.AssemblyInfo.cs
+C:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.csproj.CoreCompileInputs.cache
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\bin\Debug\net9.0\omarA1.exe
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\bin\Debug\net9.0\omarA1.deps.json
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\bin\Debug\net9.0\omarA1.runtimeconfig.json
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\bin\Debug\net9.0\omarA1.dll
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\bin\Debug\net9.0\omarA1.pdb
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.dll
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\refint\omarA1.dll
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.pdb
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\omarA1.genruntimeconfig.cache
+c:\Users\marco\OneDrive\Documentos\OMARGAMES\A1\omarA1\obj\Debug\net9.0\ref\omarA1.dll
