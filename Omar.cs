@@ -1,9 +1,11 @@
 public class Omar
 {
-    public float X { get; set; }
+     public float X { get; set; }
     public float Y { get; set; }
     public float Size { get; set; }
     public float Speed { get; set; }
+    public float VelocityX { get; set; } // Velocidad en X
+    public float VelocityY { get; set; } // Velocidad en Y
 
     public Omar(float x, float y, float size)
     {
@@ -11,13 +13,24 @@ public class Omar
         Y = y;
         Size = size;
         Speed = 2; // Velocidad inicial de Omar
+        VelocityX = 0;
+        VelocityY = 0;
     }
 
-    public void Move(float deltaX, float deltaY)
+    public void MoveSmooth(float deltaX, float deltaY)
     {
-        X += deltaX * Speed;
-        Y += deltaY * Speed;
+        // Asignar la velocidad de movimiento en función de la dirección y velocidad
+        VelocityX = deltaX * Speed;
+        VelocityY = deltaY * Speed;
     }
+
+    // Actualizamos la posición basándonos en la velocidad (para movimiento suave)
+    public void UpdatePosition()
+    {
+        X += VelocityX;
+        Y += VelocityY;
+    }
+
 
     // Método para verificar la colisión con un rombo
     public bool IsCollidingWithDiamond(Diamond diamond)

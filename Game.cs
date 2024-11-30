@@ -10,7 +10,9 @@ public class Game
     private System.Windows.Forms.Timer gameTimer; // El temporizador para actualizar la pantalla
     private HashSet<Keys> pressedKeys; // Usaremos un HashSet para almacenar las teclas presionadas
     private Map map;
-
+    private bool isFullScreen;
+    private const int GameWidth = 800;  // Ancho real del juego
+    private const int GameHeight = 600; // Alto real del juego
     public Game()
     {
         frame = new Frame();
@@ -18,6 +20,8 @@ public class Game
         map = new Map(); // Inicializamos el mapa
         isInGame = false; // Inicialmente en el menú
         pressedKeys = new HashSet<Keys>(); // Inicializar el HashSet
+        isFullScreen = false; // Inicialmente no está en pantalla completa
+
 
         // Suscribimos los eventos de teclas presionadas y liberadas
         frame.KeyDown += new KeyEventHandler(OnKeyDown);
@@ -50,12 +54,32 @@ public class Game
         gameTimer.Stop(); // Detener el temporizador
         frame.Invalidate(); // Forzar un repintado de la ventana
     }
+     private void ToggleFullScreen()
+    {
+        if (isFullScreen)
+        {
+            // Regresar a la ventana normal
+            frame.FormBorderStyle = FormBorderStyle.Sizable;
+            frame.WindowState = FormWindowState.Normal;
+            frame.Size = new Size(800, 600); // Resolución original
+            isFullScreen = false;
+        }
+        else
+        {
+               // Cambiar a pantalla completa
+            frame.FormBorderStyle = FormBorderStyle.None;
+            frame.WindowState = FormWindowState.Maximized;
+            isFullScreen = true;
+        }
+    }
 
   // Método que se llama cada vez que el temporizador "tickea" (cada 16 ms)
     private void GameTimer_Tick(object? sender, EventArgs e)
     {
         if (isInGame)
         {
+            // Actualizar la posición de Omar suavemente en cada "tick"
+            omar.UpdatePosition();
             // Revisar las colisiones
             map.CheckCollisions(omar);
             // Redibujar la pantalla constantemente
@@ -65,6 +89,11 @@ public class Game
     // Detecta la tecla presionada y cambia el estado del juego
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
+        if (e.KeyCode == Keys.F)
+        {
+            // Cambiar a pantalla completa o volver a ventana normal al presionar F
+            ToggleFullScreen();
+        }
         if (!pressedKeys.Contains(e.KeyCode))
         {
             pressedKeys.Add(e.KeyCode); // Agregar la tecla al HashSet cuando se presiona
@@ -82,7 +111,7 @@ public class Game
             if (pressedKeys.Contains(Keys.D)) dx = 1;  // Mover hacia la derecha
 
             // Mover a Omar en las 8 direcciones usando el valor de speed
-            omar.Move(dx * omar.Speed, dy * omar.Speed);
+                omar.MoveSmooth(dx, dy);
             
              // Escape: Regresar al menú cuando estamos en el juego
             if (e.KeyCode == Keys.Escape)
@@ -106,15 +135,21 @@ public class Game
 
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
-        if (pressedKeys.Contains(e.KeyCode))
+        if (e.KeyCode == Keys.W || e.KeyCode == Keys.S)
         {
-            pressedKeys.Remove(e.KeyCode); // Eliminar la tecla del HashSet cuando se deja de presionar
+            omar.VelocityY = 0; // Detener el movimiento en Y
         }
+
+        if (e.KeyCode == Keys.A || e.KeyCode == Keys.D)
+        {
+            omar.VelocityX = 0; // Detener el movimiento en X
+        }
+        pressedKeys.Remove(e.KeyCode);
     }
 
 
     private void FramePaint(object? sender, PaintEventArgs e)
-    {
+    {   
         if (isInGame)
         {
              // Dibuja el mapa
