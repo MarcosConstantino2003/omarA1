@@ -34,6 +34,7 @@ public class Enemy
             Position = new PointF(Position.X + deltaX * Speed, Position.Y + deltaY * Speed);
         }
     }
+    
     public void Draw(Graphics g)
     {
         Brush brush = new SolidBrush(Color);

@@ -93,7 +93,7 @@ public class Map
         {
             if (omar.IsCollidingWithEnemy(enemy))
             {
-                omar.DecreaseHP(1);  // Reduce 1 HP por colisión con enemigo
+                omar.DecreaseHP(10);  // Reduce 1 HP por colisión con enemigo
                 enemies.Remove(enemy);  // Eliminar al enemigo después de la colisión
                 break;
             }

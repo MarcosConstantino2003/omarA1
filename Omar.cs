@@ -19,30 +19,30 @@ public class Omar
         HP = 10;  // HP inicial de 10
     }
 
-    public void MoveSmooth(float deltaX, float deltaY)
-    {
-        // Calcular la longitud del vector (es decir, la distancia)
-        float magnitude = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        // Si no estamos moviéndonos, no normalizamos
-        if (magnitude != 0)
+        public void MoveSmooth(float deltaX, float deltaY)
         {
-            // Normalizamos el vector de dirección para que la velocidad sea constante en todas direcciones
-            deltaX = deltaX / magnitude;
-            deltaY = deltaY / magnitude;
+            // Calcular la longitud del vector (es decir, la distancia)
+            float magnitude = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            // Si no estamos moviéndonos, no normalizamos
+            if (magnitude != 0)
+            {
+                // Normalizamos el vector de dirección para que la velocidad sea constante en todas direcciones
+                deltaX = deltaX / magnitude;
+                deltaY = deltaY / magnitude;
+            }
+
+            // Multiplicamos por la velocidad deseada
+            VelocityX = deltaX * Speed;
+            VelocityY = deltaY * Speed;
         }
 
-        // Multiplicamos por la velocidad deseada
-        VelocityX = deltaX * Speed;
-        VelocityY = deltaY * Speed;
-    }
-
-    // Actualizamos la posición basándonos en la velocidad (para movimiento suave)
-    public void UpdatePosition()
-    {
-        X += VelocityX;
-        Y += VelocityY;
-    }
+        // Actualizamos la posición basándonos en la velocidad (para movimiento suave)
+        public void UpdatePosition()
+        {
+            X += VelocityX;
+            Y += VelocityY;
+        }
 
 
     // Método para verificar la colisión con un rombo

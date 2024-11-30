@@ -7,6 +7,7 @@ public class Game
     private Frame frame;
     private Omar omar;
     private bool isInGame;
+    private bool isGameOver;
     private System.Windows.Forms.Timer gameTimer; // El temporizador para actualizar la pantalla
     private HashSet<Keys> pressedKeys; // Usaremos un HashSet para almacenar las teclas presionadas
     private Map map;
@@ -46,6 +47,19 @@ public class Game
         frame.Invalidate(); // Forzar un repintado de la ventana
     }
 
+      // Reiniciar el juego
+    private void RestartGame()
+    {
+        omar = new Omar(100, 100, 40); // Reinicia a Omar
+        map = new Map(); // Reinicia el mapa
+        isInGame = true; // Comienza el juego
+        isGameOver = false; // Reinicia el estado de Game Over
+        frame.BackColor = Color.Gray; // Fondo gris
+        gameTimer.Start(); // Inicia el temporizador
+        frame.Invalidate(); // Forzar repintado
+    }
+
+
     // Método para cambiar al estado de menú
     public void ShowMenu()
     {
@@ -84,6 +98,11 @@ public class Game
             map.CheckCollisions(omar);
             // Redibujar la pantalla constantemente
             frame.Invalidate();
+              if (omar.HP <= 0)
+            {
+                isInGame = false;
+                isGameOver = true;  // El juego ha terminado
+            }
         }
     }
     // Detecta la tecla presionada y cambia el estado del juego
@@ -94,6 +113,7 @@ public class Game
             // Cambiar a pantalla completa o volver a ventana normal al presionar F
             ToggleFullScreen();
         }
+
         if (!pressedKeys.Contains(e.KeyCode))
         {
             pressedKeys.Add(e.KeyCode); // Agregar la tecla al HashSet cuando se presiona
@@ -109,14 +129,23 @@ public class Game
             if (pressedKeys.Contains(Keys.S)) dy = 1;  // Mover hacia abajo
             if (pressedKeys.Contains(Keys.A)) dx = -1; // Mover hacia la izquierda
             if (pressedKeys.Contains(Keys.D)) dx = 1;  // Mover hacia la derecha
+            omar.MoveSmooth(dx, dy);
 
-            // Mover a Omar en las 8 direcciones usando el valor de speed
-                omar.MoveSmooth(dx, dy);
-            
-             // Escape: Regresar al menú cuando estamos en el juego
             if (e.KeyCode == Keys.Escape)
             {
-                ShowMenu(); // Volver al menú
+                ShowMenu();
+            }
+              else if (e.KeyCode == Keys.R) // Reiniciar el juego
+            {
+                RestartGame(); // Reinicia el juego
+            }
+        } else if (isGameOver){
+            if (e.KeyCode == Keys.Escape)
+            {
+                isGameOver = false;
+                RestartGame(); // Reinicia el juego
+                ShowMenu();
+
             }
         }
         else
@@ -164,36 +193,18 @@ public class Game
         }
         else
         {
+             // Mostrar el mensaje de menú o derrota
+            if (isGameOver)
+            {
+                frame.DrawGameOverMessage(e.Graphics); // Mostrar mensaje de derrota
+            } else {
             // Mostrar el mensaje de menú
-            ShowMenuMessage(e.Graphics);
+            frame.ShowMenuMessage(e.Graphics);
+        }
         }
     }
 
-    // Método para dibujar el mensaje en el menú
-    private void ShowMenuMessage(Graphics g)
-    {
-       string message1 = "Presiona Enter para empezar";
-        string message2 = "Presiona Esc para salir";
-        Font font1 = new Font("Arial", 24, FontStyle.Bold);
-        Font font2 = new Font("Arial", 18, FontStyle.Regular); // Fuente más pequeña para el segundo mensaje
-        Brush brush = Brushes.Black;
-
-        // Calcular la posición centrada para el primer mensaje
-        SizeF textSize1 = g.MeasureString(message1, font1);
-        float x1 = (frame.ClientSize.Width - textSize1.Width) / 2;
-        float y1 = (frame.ClientSize.Height - textSize1.Height) / 2;
-
-        // Dibujar el primer mensaje
-        g.DrawString(message1, font1, brush, x1, y1);
-
-        // Calcular la posición para el segundo mensaje (debajo del primero)
-        SizeF textSize2 = g.MeasureString(message2, font2);
-        float x2 = (frame.ClientSize.Width - textSize2.Width) / 2;
-        float y2 = y1 + textSize1.Height + 10; // 10 píxeles de espacio entre los dos mensajes
-
-        // Dibujar el segundo mensaje
-        g.DrawString(message2, font2, brush, x2, y2);
-    }
+    
 
     public static void Main(string[] args)
     {

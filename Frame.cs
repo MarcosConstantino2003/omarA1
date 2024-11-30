@@ -45,4 +45,46 @@ public void DrawStatistics(Graphics g, Omar omar)
     g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 30);
     g.DrawString(hpText, font, whiteBrush, this.ClientSize.Width - hpSize.Width - 9, 29); // Borde negro
 }
+
+ // Método para dibujar el mensaje de derrota
+    public void DrawGameOverMessage(Graphics g)
+    {
+        string message = "¡DERROTA! La salud de Omar ha llegado a 0.";
+        Font font = new Font("Arial", 24, FontStyle.Bold);
+        Brush brush = Brushes.Red;
+
+        // Calcular la posición centrada para el mensaje
+        SizeF textSize = g.MeasureString(message, font);
+        float x = (ClientSize.Width - textSize.Width) / 2;
+        float y = (ClientSize.Height - textSize.Height) / 2;
+
+        // Dibujar el mensaje
+        g.DrawString(message, font, brush, x, y);
+    }
+
+    // Método para dibujar el mensaje en el menú
+    public void ShowMenuMessage(Graphics g)
+    {
+       string message1 = "Presiona Enter para empezar";
+        string message2 = "Presiona Esc para salir";
+        Font font1 = new Font("Arial", 24, FontStyle.Bold);
+        Font font2 = new Font("Arial", 18, FontStyle.Regular); // Fuente más pequeña para el segundo mensaje
+        Brush brush = Brushes.Black;
+
+        // Calcular la posición centrada para el primer mensaje
+        SizeF textSize1 = g.MeasureString(message1, font1);
+        float x1 = (ClientSize.Width - textSize1.Width) / 2;
+        float y1 = (ClientSize.Height - textSize1.Height) / 2;
+
+        // Dibujar el primer mensaje
+        g.DrawString(message1, font1, brush, x1, y1);
+
+        // Calcular la posición para el segundo mensaje (debajo del primero)
+        SizeF textSize2 = g.MeasureString(message2, font2);
+        float x2 = (ClientSize.Width - textSize2.Width) / 2;
+        float y2 = y1 + textSize1.Height + 10; // 10 píxeles de espacio entre los dos mensajes
+
+        // Dibujar el segundo mensaje
+        g.DrawString(message2, font2, brush, x2, y2);
+    }
 }
