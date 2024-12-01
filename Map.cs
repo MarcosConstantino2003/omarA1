@@ -1,15 +1,17 @@
 public class Map
 {
     private List<Diamond> greenDiamonds; 
-    private List<Diamond> purpleDiamonds; // 
+    private List<Diamond> purpleDiamonds; 
     private List<Enemy> enemies;
     private List<PointF> spawnMarkers; 
-    private List<Heart> hearts; // Lista de corazones
+    private List<Heart> hearts; 
+    private List<Bullet> bullets;
     private Random random;
     private System.Windows.Forms.Timer greenDiamondTimer;
     private System.Windows.Forms.Timer purpleDiamondTimer;
     private System.Windows.Forms.Timer enemyTimer;
     private System.Windows.Forms.Timer heartTimer;
+    private System.Windows.Forms.Timer shootTimer;
     private Omar omar;
     public Map(Omar omar)
     {
@@ -18,7 +20,8 @@ public class Map
         purpleDiamonds = new List<Diamond>();
         enemies = new List<Enemy>();
         spawnMarkers = new List<PointF>(); 
-        hearts = new List<Heart>(); // Inicializar la lista de corazones
+        hearts = new List<Heart>(); 
+        bullets = new List<Bullet>();
         random = new Random();
         // Temporizador para generar rombos verdes cada 6 segundos
         greenDiamondTimer = new System.Windows.Forms.Timer();
@@ -43,6 +46,18 @@ public class Map
         heartTimer.Interval = 8000;  // 8 segundos
         heartTimer.Tick += SpawnHearts;
         heartTimer.Start();
+
+        shootTimer = new System.Windows.Forms.Timer();
+        shootTimer.Interval = 500; // Disparar cada 500ms
+        shootTimer.Tick += (sender, e) =>
+        {
+            var closestEnemy = GetClosestEnemy();
+            if (closestEnemy != null)
+            {
+                omar.Shoot(bullets, closestEnemy); // Solo dispara si hay un enemigo cercano
+            }
+        };        
+        shootTimer.Start();
     }
 
     private void SpawnGreenDiamonds(object? sender, EventArgs e)
@@ -201,6 +216,14 @@ public class Map
             enemy.MoveTowardsOmar(omar);
         }
     }
+    public void UpdateBullets()
+    {
+        // Actualizar la posición de todas las balas
+        foreach (var bullet in bullets)
+        {
+            bullet.Update();
+        }
+    }
     // Método para dibujar los rombos en el gráfico
     public void Draw(Graphics g)
     {
@@ -236,6 +259,10 @@ public class Map
         {
             // Dibujar el triángulo apuntando hacia el enemigo más cercano
             omar.DrawTriangle(g, closestEnemy);
+        }
+        foreach (var bullet in bullets)
+        {
+            bullet.Draw(g);
         }
     }
     private void DrawSpawnMarker(Graphics g, PointF position)

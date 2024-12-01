@@ -180,4 +180,23 @@ public class Omar
         g.FillEllipse(brush, X - Size / 2, Y - Size / 2, Size, Size);
         g.DrawEllipse(blackPen, X - Size / 2, Y - Size / 2, Size, Size);
     }
+    public void Shoot(List<Bullet> bullets, Enemy closestEnemy)
+    {
+        if (closestEnemy == null) return;
+
+        // Calcular la dirección hacia el enemigo más cercano
+        float dx = closestEnemy.Position.X - X;
+        float dy = closestEnemy.Position.Y - Y;
+        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+        // Normalizar la dirección
+        float directionX = dx / distance;
+        float directionY = dy / distance;
+
+        // Crear una nueva bala saliendo desde el triángulo
+        float bulletStartX = X + directionX * 30; // Coordenada inicial X de la bala
+        float bulletStartY = Y + directionY * 30; // Coordenada inicial Y de la bala
+
+        bullets.Add(new Bullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, 5)); // Daño de 5
+    }
 }

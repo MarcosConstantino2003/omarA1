@@ -103,6 +103,7 @@ public class Game
                 isInGame = false;
                 isGameOver = true;  // El juego ha terminado
             }
+            map.UpdateBullets();
         }
     }
     // Detecta la tecla presionada y cambia el estado del juego
