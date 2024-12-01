@@ -9,6 +9,8 @@ public class Omar
     public float VelocityY { get; set; } 
     public float MaxHP { get; set; }
     public float HP { get; set; }
+    public int damage {get; set;}
+    public int shotSpeed {get; set;}
     private bool isTakingDamage; 
     private DateTime damageStartTime; 
     private bool isRed; 
@@ -22,8 +24,10 @@ public class Omar
         MaxSpeed = 9; 
         VelocityX = 0;
         VelocityY = 0;
-        HP = 15;
         MaxHP = 15;
+        HP = MaxHP;
+        damage = 3;
+        shotSpeed = 1;
     }
 
         public void MoveSmooth(float deltaX, float deltaY)
@@ -108,6 +112,13 @@ public class Omar
                 Y + Size > heart.Position.Y);
     }
 
+    public int GetShootDelay()
+    {
+        // El delay base es de 500ms y se reduce 30ms por cada unidad de shotSpeed, con un mínimo de 100ms
+        int calculatedDelay = 500 - (int)(shotSpeed * 30);
+        return Math.Max(calculatedDelay, 100); // Limitar el delay a 100ms como mínimo
+    }
+
     // Método para aumentar los HP de Omar
     public void IncreaseHP(int amount)
     {
@@ -144,6 +155,16 @@ public class Omar
         damageStartTime = DateTime.Now;
     }
 
+    public void IncreaseShotSpeed(int amount)
+    {
+        shotSpeed += amount; 
+    }
+
+    public void IncreaseDamage(int amount)
+    {
+        damage += amount; // Aumentar el daño
+    }
+
     public void DrawTriangle(Graphics g, Enemy closestEnemy)
     {
         if (closestEnemy == null) return; 
@@ -173,13 +194,7 @@ public class Omar
         g.FillPolygon(Brushes.DarkBlue, new PointF[] { p1, p2, p3 });
     }
 
-    public void Draw(Graphics g)
-    {
-        Brush brush = isTakingDamage ? (isRed ? Brushes.DarkRed : Brushes.White) : Brushes.White;
-        Pen blackPen = new Pen(Color.Black, 2);
-        g.FillEllipse(brush, X - Size / 2, Y - Size / 2, Size, Size);
-        g.DrawEllipse(blackPen, X - Size / 2, Y - Size / 2, Size, Size);
-    }
+    
     public void Shoot(List<Bullet> bullets, Enemy closestEnemy)
     {
         if (closestEnemy == null) return;
@@ -195,8 +210,16 @@ public class Omar
 
         // Crear una nueva bala saliendo desde el triángulo
         float bulletStartX = X + directionX * 30; // Coordenada inicial X de la bala
-        float bulletStartY = Y + directionY * 30; // Coordenada inicial Y de la bala
+        float bulletStartY = Y + directionY * 30 + 20; // Coordenada inicial Y de la bala
 
-        bullets.Add(new Bullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, 5)); // Daño de 5
+        bullets.Add(new Bullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, damage)); // Daño de 5
+    }
+
+    public void Draw(Graphics g)
+    {
+        Brush brush = isTakingDamage ? (isRed ? Brushes.DarkRed : Brushes.White) : Brushes.White;
+        Pen blackPen = new Pen(Color.Black, 2);
+        g.FillEllipse(brush, X - Size / 2, Y - Size / 2, Size, Size);
+        g.DrawEllipse(blackPen, X - Size / 2, Y - Size / 2, Size, Size);
     }
 }

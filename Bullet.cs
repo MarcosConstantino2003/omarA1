@@ -21,6 +21,15 @@ public class Bullet
         Position = new PointF(Position.X + DirectionX * Speed, Position.Y + DirectionY * Speed);
     }
 
+    public bool IsCollidingWithEnemy(Enemy enemy)
+    {
+        // Verificar si la posición de la bala está dentro del área del enemigo
+        return (Position.X > enemy.Position.X &&
+                Position.X < enemy.Position.X + enemy.Size &&
+                Position.Y > enemy.Position.Y &&
+                Position.Y < enemy.Position.Y + enemy.Size);
+    }
+
     public void Draw(Graphics g)
     {
         // Dibujar la bala como un pequeño círculo

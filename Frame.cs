@@ -20,7 +20,7 @@ public class Frame : Form
     }
 
     
-public void DrawStatistics(Graphics g, Omar omar) 
+public void DrawStatistics(Graphics g, Omar omar)
 {
     // Dibujar estadísticas en la parte superior derecha
     Font font = new Font("Arial", 14, FontStyle.Bold);
@@ -31,10 +31,10 @@ public void DrawStatistics(Graphics g, Omar omar)
     // Dibujar velocidad
     string speedText = $"Speed: {omar.Speed}";
     SizeF speedSize = g.MeasureString(speedText, font);
-    
+
     // Cambiar el color del texto a rojo oscuro si la velocidad es igual a MaxSpeed
     Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
-    
+
     // Dibujar el texto con borde negro
     g.DrawString(speedText, font, blackBrush, this.ClientSize.Width - speedSize.Width - 10, 10);
     g.DrawString(speedText, font, speedBrush, this.ClientSize.Width - speedSize.Width - 9, 9); // Borde negro
@@ -42,13 +42,29 @@ public void DrawStatistics(Graphics g, Omar omar)
     // Dibujar HP
     string hpText = $"HP: {omar.HP}/{omar.MaxHP}";
     SizeF hpSize = g.MeasureString(hpText, font);
-    
+
     // Cambiar color si HP está lleno
     Brush hpBrush = (omar.HP == omar.MaxHP) ? Brushes.DarkRed : whiteBrush;
 
     // Dibujar el texto con borde negro
     g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 30);
     g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 29); // Borde negro
+
+    // Dibujar daño
+    string dmgText = $"Damage: {omar.damage}";
+    SizeF dmgSize = g.MeasureString(dmgText, font);
+
+    // Dibujar el texto con borde negro
+    g.DrawString(dmgText, font, blackBrush, this.ClientSize.Width - dmgSize.Width - 10, 50);
+    g.DrawString(dmgText, font, whiteBrush, this.ClientSize.Width - dmgSize.Width - 9, 49); // Borde negro
+
+    // Dibujar velocidad de disparo
+    string shotSpeedText = $"ShotSpeed: {omar.shotSpeed}"; // Multiplícalo por 100 para mostrar el intervalo real
+    SizeF shotSpeedSize = g.MeasureString(shotSpeedText, font);
+
+    // Dibujar el texto con borde negro
+    g.DrawString(shotSpeedText, font, blackBrush, this.ClientSize.Width - shotSpeedSize.Width - 10, 70);
+    g.DrawString(shotSpeedText, font, whiteBrush, this.ClientSize.Width - shotSpeedSize.Width - 9, 69); // Borde negro
 }
 
  // Método para dibujar el mensaje de derrota

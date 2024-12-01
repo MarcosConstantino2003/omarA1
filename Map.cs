@@ -3,9 +3,12 @@ public class Map
     private List<Diamond> greenDiamonds; 
     private List<Diamond> purpleDiamonds; 
     private List<Enemy> enemies;
+    private List<Enemy> enemiesToRemove;
     private List<PointF> spawnMarkers; 
     private List<Heart> hearts; 
     private List<Bullet> bullets;
+    private List<Bullet> bulletsToRemove;
+
     private Random random;
     private System.Windows.Forms.Timer greenDiamondTimer;
     private System.Windows.Forms.Timer purpleDiamondTimer;
@@ -19,14 +22,16 @@ public class Map
         greenDiamonds = new List<Diamond>();
         purpleDiamonds = new List<Diamond>();
         enemies = new List<Enemy>();
+        enemiesToRemove = new List<Enemy>();
         spawnMarkers = new List<PointF>(); 
         hearts = new List<Heart>(); 
         bullets = new List<Bullet>();
+        bulletsToRemove = new List<Bullet>();
         random = new Random();
         // Temporizador para generar rombos verdes cada 6 segundos
         greenDiamondTimer = new System.Windows.Forms.Timer();
         greenDiamondTimer.Interval = 6000; 
-        greenDiamondTimer.Tick += SpawnGreenDiamonds;
+        greenDiamondTimer.Tick += SpawnDiamonds;
         greenDiamondTimer.Start();
 
         // Temporizador para generar rombos rojos cada 12 segundos
@@ -48,28 +53,47 @@ public class Map
         heartTimer.Start();
 
         shootTimer = new System.Windows.Forms.Timer();
-        shootTimer.Interval = 500; // Disparar cada 500ms
+        shootTimer.Interval =  omar.GetShootDelay(); 
         shootTimer.Tick += (sender, e) =>
         {
             var closestEnemy = GetClosestEnemy();
             if (closestEnemy != null)
             {
-                omar.Shoot(bullets, closestEnemy); // Solo dispara si hay un enemigo cercano
+                omar.Shoot(bullets, closestEnemy); 
             }
         };        
         shootTimer.Start();
     }
 
-    private void SpawnGreenDiamonds(object? sender, EventArgs e)
+    private void SpawnDiamonds(object? sender, EventArgs e)
     {
-        // Generar rombos verdes en posiciones aleatorias
+        // Generar rombos en posiciones aleatorias
         float x = random.Next(50, 750); // Posición aleatoria en el rango X
         float y = random.Next(50, 550); // Posición aleatoria en el rango Y
 
-        // Añadir rombos verdes
-        greenDiamonds.Add(new Diamond(new PointF(x, y), Color.Green, 20));
-    }
+        // Elegir aleatoriamente entre verde, celeste y negro
+        Color diamondColor;
+        int randomChoice = random.Next(0, 3); // 0 para verde, 1 para celeste, 2 para negro
 
+        switch (randomChoice)
+        {
+            case 0:
+                diamondColor = Color.Green;
+                break;
+            case 1:
+                diamondColor = Color.Cyan; // Celeste
+                break;
+            case 2:
+                diamondColor = Color.Black; // Negro
+                break;
+            default:
+                diamondColor = Color.Green; // Default verde
+                break;
+        }
+
+        // Añadir rombo con el color elegido
+        greenDiamonds.Add(new Diamond(new PointF(x, y), diamondColor, 20));
+    }
     private void SpawnPurpleDiamonds(object? sender, EventArgs e)
     {
         // Generar rombos rojos en posiciones aleatorias
@@ -144,24 +168,36 @@ public class Map
     public void CheckCollisions()
     {
         // Revisar las colisiones con los rombos verdes
-        foreach (var greenDiamond in greenDiamonds)
+        foreach (var diamond in greenDiamonds)
         {
-            if (omar.IsCollidingWithDiamond(greenDiamond))
+            if (omar.IsCollidingWithDiamond(diamond))
+        {
+            if (diamond.Color == Color.Green)
             {
-                omar.IncreaseSpeed(1);  // Aumenta 1 de velocidad por diamante verde
-                greenDiamonds.Remove(greenDiamond); // Eliminar el rombo verde al ser tocado
-                break; // Salir del ciclo ya que no es necesario seguir buscando
+                omar.IncreaseSpeed(1);  
             }
+            else if (diamond.Color == Color.Cyan) 
+            {
+                omar.IncreaseShotSpeed(2); 
+            }
+            else if (diamond.Color == Color.Black)
+            {
+                omar.IncreaseDamage(1); 
+            }
+
+            greenDiamonds.Remove(diamond); 
+            break; 
+        }
         }
 
         // Revisar las colisiones con los rombos rojos
-        foreach (var redDiamond in purpleDiamonds)
+        foreach (var purpleDiamond in purpleDiamonds)
         {
-            if (omar.IsCollidingWithDiamond(redDiamond))
+            if (omar.IsCollidingWithDiamond(purpleDiamond))
             {
-                omar.DecreaseSpeed(0.5f);  // Disminuye 0.5 de velocidad por diamante rojo
-                purpleDiamonds.Remove(redDiamond); // Eliminar el rombo rojo al ser tocado
-                break; // Salir del ciclo ya que no es necesario seguir buscando
+                omar.DecreaseSpeed(0.5f);  
+                purpleDiamonds.Remove(purpleDiamond); 
+                break; 
             }
         }
         // Revisar colisiones con los enemigos
@@ -169,12 +205,12 @@ public class Map
         {
             if (omar.IsCollidingWithEnemy(enemy))
             {
-                omar.DecreaseHP(4);  // Reduce 1 HP por colisión con enemigo
-                enemies.Remove(enemy);  // Eliminar al enemigo después de la colisión
+                omar.DecreaseHP(3);  
+                enemies.Remove(enemy); 
                 break;
             }
         }
-         // Revisar las colisiones con los corazones
+         
     foreach (var heart in hearts)
     {
         if (omar.IsCollidingWithHeart(heart))
@@ -214,7 +250,16 @@ public class Map
         foreach (var enemy in enemies)
         {
             enemy.MoveTowardsOmar(omar);
+             // Si el enemigo tiene HP 0, lo agregamos a la lista para eliminarlo
+            if (enemy.HP == 0)
+            {
+                enemiesToRemove.Add(enemy);
+            }
         }
+        foreach (var enemy in enemiesToRemove)
+    {
+        enemies.Remove(enemy);
+    }
     }
     public void UpdateBullets()
     {
@@ -222,8 +267,26 @@ public class Map
         foreach (var bullet in bullets)
         {
             bullet.Update();
+        
+           // Verificar colisiones con enemigos
+        foreach (var enemy in enemies)
+        {
+            if (bullet.IsCollidingWithEnemy(enemy))
+            {
+                enemy.TakeDamage(bullet.Damage); // Reducir HP del enemigo
+                bulletsToRemove.Add(bullet);    // Marcar la bala para eliminarla
+                break; // Salir del bucle de enemigos, ya que la bala impactó
+            }
         }
     }
+
+    // Eliminar las balas que colisionaron
+        foreach (var bullet in bulletsToRemove)
+        {
+            bullets.Remove(bullet);
+        }
+    }
+
     // Método para dibujar los rombos en el gráfico
     public void Draw(Graphics g)
     {
