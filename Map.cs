@@ -179,6 +179,7 @@ public class Map
             else if (diamond.Color == Color.Cyan) 
             {
                 omar.IncreaseShotSpeed(2); 
+                shootTimer.Interval =  omar.GetShootDelay();
             }
             else if (diamond.Color == Color.Black)
             {
