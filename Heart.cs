@@ -3,12 +3,19 @@ public class Heart
     public PointF Position { get; set; }
     public Color Color { get; set; }
     public float Size { get; set; }
+    public DateTime CreationTime { get; } // Fecha de creación
+
 
     public Heart(PointF position, Color color, float size)
     {
         Position = position;
         Color = color;
         Size = size;
+        CreationTime = DateTime.Now; // Establecer el tiempo de creación
+    }
+     public bool IsExpired()
+    {
+        return (DateTime.Now - CreationTime).TotalSeconds >= 11;
     }
 
     public void Draw(Graphics g)

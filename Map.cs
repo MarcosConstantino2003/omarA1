@@ -244,6 +244,13 @@ public class Map
         return closestEnemy;
     }
 
+    public void update(){
+        CheckCollisions();
+        omar.UpdatePosition();
+        UpdateEnemies();
+        UpdateBullets();
+        UpdateDiamonds();
+    }
     // Método para mover los enemigos hacia Omar
     public void UpdateEnemies()
     {
@@ -279,12 +286,21 @@ public class Map
             }
         }
     }
+    
 
     // Eliminar las balas que colisionaron
         foreach (var bullet in bulletsToRemove)
         {
             bullets.Remove(bullet);
         }
+    }
+
+    public void UpdateDiamonds()
+    {
+        // Eliminar diamantes que hayan estado en el juego por más de 7 segundos
+        greenDiamonds.RemoveAll(diamond => diamond.IsExpired());
+        purpleDiamonds.RemoveAll(diamond => diamond.IsExpired());
+        hearts.RemoveAll(heart=> heart.IsExpired());
     }
 
     // Método para dibujar los rombos en el gráfico

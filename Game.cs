@@ -92,18 +92,14 @@ public class Game
     {
         if (isInGame)
         {
-            // Actualizar la posición de Omar suavemente en cada "tick"
-            omar.UpdatePosition();
-            // Revisar las colisiones
-            map.CheckCollisions();
-            // Redibujar la pantalla constantemente
+            map.update();
             frame.Invalidate();
               if (omar.HP <= 0)
             {
                 isInGame = false;
                 isGameOver = true;  // El juego ha terminado
             }
-            map.UpdateBullets();
+
         }
     }
     // Detecta la tecla presionada y cambia el estado del juego
