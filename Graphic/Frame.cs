@@ -72,5 +72,16 @@ public class Frame : Form
         g.DrawString(rangeText, font, whiteBrush, this.ClientSize.Width - rangeSize.Width - 9, 9 + lineHeight * 4);
     }
 
+    public void DrawTimer(Graphics g, int timeLeft)
+    {
+        string timerText = $"Tiempo: {timeLeft}s";
+        Font font = new Font("Arial", 24, FontStyle.Bold);
+        Brush brush = Brushes.Black;
 
+        SizeF textSize = g.MeasureString(timerText, font);
+        float x = (ClientSize.Width - textSize.Width) / 2; // Centrado horizontalmente
+        float y = 10; // Posición cerca del borde superior
+
+        g.DrawString(timerText, font, brush, x, y);
+    }
 }

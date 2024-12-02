@@ -178,7 +178,6 @@ public class Omar
         }
     }
 
-    
 
     public void IncreaseShotSpeed(int amount)
     {
@@ -188,6 +187,12 @@ public class Omar
     public void IncreaseDamage(int amount)
     {
         damage += amount; // Aumentar el daño
+    }
+
+    public void ResetPosition()
+    {
+        X = 100; 
+        Y = 100;
     }
 
     public void DrawTriangle(Graphics g, Enemy closestEnemy)

@@ -8,7 +8,8 @@ public enum GameState
     InGame,
     GameOver,
     Paused,
-    Options
+    Options,
+    Lobby
 }
 
 public class Game
@@ -25,6 +26,12 @@ public class Game
     private Menu menu;
     private PauseScreen pauseScreen;
     private GameOverScreen gameOverScreen;
+    private LobbyScreen lobbyScreen;
+    private DateTime gameStartTime;
+    private TimeSpan gameDuration = TimeSpan.FromSeconds(10); // Duración del juego
+    private TimeSpan pausedDuration = TimeSpan.Zero; // Acumula el tiempo en pausa
+    private DateTime pauseStartTime; // Marca cuándo empezó la pausa
+    
 
     public Game()
     {
@@ -36,7 +43,9 @@ public class Game
         menu = new Menu();
         pauseScreen = new PauseScreen();
         gameOverScreen = new GameOverScreen();
-        currentState = GameState.Menu; // Inicialmente en el menú
+        lobbyScreen = new LobbyScreen();
+        currentState = GameState.Menu;
+        gameStartTime = DateTime.Now;
 
         frame.KeyDown += new KeyEventHandler(OnKeyDown);
         frame.KeyUp += new KeyEventHandler(OnKeyUp);
@@ -53,8 +62,10 @@ public class Game
     {
         currentState = GameState.InGame;
         frame.BackColor = Color.Gray;
+        gameStartTime = DateTime.Now;
         gameTimer.Start();
         frame.Invalidate();
+        UpdateStartTime();
     }
 
     private void RestartGame()
@@ -65,6 +76,14 @@ public class Game
         frame.BackColor = Color.Gray;
         gameTimer.Start();
         frame.Invalidate();
+        UpdateStartTime();
+    }
+
+    private void ResetGameForLobby()
+    {
+        UpdateStartTime();
+        map.ClearObjects();
+        omar.ResetPosition();
     }
 
 
@@ -80,16 +99,18 @@ public class Game
     {
         currentState = GameState.Paused;
         frame.BackColor = Color.White;
+        pauseStartTime = DateTime.Now; // Marca el inicio de la pausa
         gameTimer.Stop();
         frame.Invalidate();
     }
 
     public void ResumeGame()
     {
-        currentState = GameState.InGame;  
-        frame.BackColor = Color.Gray;    
-        gameTimer.Start();                
-        frame.Invalidate();               
+        currentState = GameState.InGame;
+        frame.BackColor = Color.Gray;
+        pausedDuration += DateTime.Now - pauseStartTime; // Suma el tiempo pausado
+        gameTimer.Start();
+        frame.Invalidate();
     }
 
     private void ToggleFullScreen()
@@ -110,12 +131,20 @@ public class Game
     }
 
     private void GameTimer_Tick(object? sender, EventArgs e)
-    {
+    {   
         switch (currentState)
         {
             case GameState.InGame:
                 map.update();
                 frame.Invalidate();
+                int timeLeft = GetTimeLeft();
+                if (timeLeft == 0)
+                {
+                    // Cambiar al estado Lobby cuando el tiempo termine
+                    currentState = GameState.Lobby;
+                    ResetGameForLobby();
+                    frame.Invalidate();
+                }
                 if (omar.HP <= 0)
                 {
                     currentState = GameState.GameOver;
@@ -125,7 +154,16 @@ public class Game
                 break;
         }
     }
+    private int GetTimeLeft()
+    {
+        TimeSpan elapsed = DateTime.Now - gameStartTime - pausedDuration; // Resta el tiempo en pausa
+        int timeLeft = (int)(gameDuration.TotalSeconds - elapsed.TotalSeconds);
+        return Math.Max(0, timeLeft);
+    }
 
+    private void UpdateStartTime(){
+        gameStartTime = DateTime.Now;
+    }
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.F)
@@ -151,6 +189,9 @@ public class Game
                 break;
             case GameState.Paused:
                 HandlePausedControls(e);
+                break;
+            case GameState.Lobby:
+                HandleLobbyControls(e);
                 break;
         }
     }
@@ -266,6 +307,16 @@ public class Game
         }
     }
 
+    private void HandleLobbyControls(KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
+        {
+            currentState = GameState.InGame;
+            frame.BackColor = Color.Gray; // Cambiar el fondo a gris
+            frame.Invalidate();
+        }
+    }
+
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.W || e.KeyCode == Keys.S)
@@ -288,6 +339,7 @@ public class Game
                 map.Draw(e.Graphics);
                 omar.Draw(e.Graphics);
                 frame.DrawStatistics(e.Graphics, omar);
+                frame.DrawTimer(e.Graphics, GetTimeLeft());
                 break;
             case GameState.Menu:
                 menu.Draw(e.Graphics, frame.ClientSize);
@@ -297,6 +349,9 @@ public class Game
                 break;
             case GameState.GameOver:
                 gameOverScreen.Draw(e.Graphics, frame.ClientSize);
+                break;
+            case GameState.Lobby:
+                lobbyScreen.Draw(e.Graphics, frame.ClientSize);
                 break;
             }
     }

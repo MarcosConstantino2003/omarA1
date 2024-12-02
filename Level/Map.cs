@@ -120,6 +120,13 @@ public class Map
         hearts.RemoveAll(heart=> heart.IsExpired());
     }
 
+    public void ClearObjects()
+    {
+        enemies.Clear();
+        diamonds.Clear();
+        hearts.Clear();
+    }   
+
     // Método para dibujar los rombos en el gráfico
     public void Draw(Graphics g)
     {
