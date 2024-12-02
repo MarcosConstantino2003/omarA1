@@ -170,4 +170,22 @@ public class Spawner
         g.DrawLine(blackPen, position.X - 10, position.Y - 10, position.X + 10, position.Y + 10);
         g.DrawLine(blackPen, position.X - 10, position.Y + 10, position.X + 10, position.Y - 10);
     }
+
+    public void ResetTimers()
+    {
+        // Detener los timers
+        diamondTimer.Stop();
+        enemyTimer.Stop();
+        heartTimer.Stop();
+
+        // Reiniciar los intervalos si es necesario
+        diamondTimer.Interval = 6000;  // 6 segundos
+        enemyTimer.Interval = 4000;    // 4 segundos
+        heartTimer.Interval = 8000;    // 8 segundos
+
+        // Reiniciar el tiempo de los timers si es necesario (esto es opcional)
+        diamondTimer.Start();
+        enemyTimer.Start();
+        heartTimer.Start();
+    }
 }

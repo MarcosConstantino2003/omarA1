@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -14,24 +15,26 @@ public enum GameState
 
 public class Game
 {
-    private Frame frame;
+    public Frame frame;
     public Omar omar;
-    private GameState currentState; // Estado actual del juego
+    public GameState currentState; 
     private System.Windows.Forms.Timer gameTimer;
     private HashSet<Keys> pressedKeys;
-    private Map map;
-    private bool isFullScreen;
+    public Map map;
+    public bool isFullScreen;
     private const int GameWidth = 800;
     private const int GameHeight = 600;
-    private Menu menu;
-    private PauseScreen pauseScreen;
-    private GameOverScreen gameOverScreen;
-    private LobbyScreen lobbyScreen;
+    public Menu menu;
+    public PauseScreen pauseScreen;
+    public GameOverScreen gameOverScreen;
+    public LobbyScreen lobbyScreen;
     private DateTime gameStartTime;
     private TimeSpan gameDuration = TimeSpan.FromSeconds(10); // Duración del juego
     private TimeSpan pausedDuration = TimeSpan.Zero; // Acumula el tiempo en pausa
     private DateTime pauseStartTime; // Marca cuándo empezó la pausa
+    private InputHandler inputHandler;
     
+
 
     public Game()
     {
@@ -47,8 +50,9 @@ public class Game
         currentState = GameState.Menu;
         gameStartTime = DateTime.Now;
 
-        frame.KeyDown += new KeyEventHandler(OnKeyDown);
-        frame.KeyUp += new KeyEventHandler(OnKeyUp);
+        inputHandler = new InputHandler(this);
+        frame.KeyDown += new KeyEventHandler(inputHandler.OnKeyDown);
+        frame.KeyUp += new KeyEventHandler(inputHandler.OnKeyUp);
         frame.KeyPreview = true;
         frame.Paint += new PaintEventHandler(FramePaint);
 
@@ -68,7 +72,7 @@ public class Game
         UpdateStartTime();
     }
 
-    private void RestartGame()
+    public void RestartGame()
     {
         omar = new Omar(100, 100, 40);
         map = new Map(omar);
@@ -77,13 +81,20 @@ public class Game
         gameTimer.Start();
         frame.Invalidate();
         UpdateStartTime();
+        inputHandler.ResetInputHandler(omar);
     }
 
-    private void ResetGameForLobby()
+    public void ResetGameForLobby()
     {
         UpdateStartTime();
         map.ClearObjects();
         omar.ResetPosition();
+        currentState = GameState.InGame;
+        frame.BackColor = Color.Gray;
+        gameStartTime = DateTime.Now;
+        gameTimer.Start();
+        frame.Invalidate();
+        UpdateStartTime();
     }
 
 
@@ -104,6 +115,12 @@ public class Game
         frame.Invalidate();
     }
 
+    public void GoToLobby(){
+        currentState = GameState.Lobby;
+        gameTimer.Stop();
+        frame.Invalidate();
+    }
+
     public void ResumeGame()
     {
         currentState = GameState.InGame;
@@ -111,23 +128,6 @@ public class Game
         pausedDuration += DateTime.Now - pauseStartTime; // Suma el tiempo pausado
         gameTimer.Start();
         frame.Invalidate();
-    }
-
-    private void ToggleFullScreen()
-    {
-        if (isFullScreen)
-        {
-            frame.FormBorderStyle = FormBorderStyle.Sizable;
-            frame.WindowState = FormWindowState.Normal;
-            frame.Size = new Size(800, 600); 
-            isFullScreen = false;
-        }
-        else
-        {
-            frame.FormBorderStyle = FormBorderStyle.None;
-            frame.WindowState = FormWindowState.Maximized;
-            isFullScreen = true;
-        }
     }
 
     private void GameTimer_Tick(object? sender, EventArgs e)
@@ -140,10 +140,7 @@ public class Game
                 int timeLeft = GetTimeLeft();
                 if (timeLeft == 0)
                 {
-                    // Cambiar al estado Lobby cuando el tiempo termine
-                    currentState = GameState.Lobby;
-                    ResetGameForLobby();
-                    frame.Invalidate();
+                    GoToLobby();
                 }
                 if (omar.HP <= 0)
                 {
@@ -164,172 +161,7 @@ public class Game
     private void UpdateStartTime(){
         gameStartTime = DateTime.Now;
     }
-    private void OnKeyDown(object? sender, KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.F)
-        {
-            ToggleFullScreen();
-        }
-
-        if (!pressedKeys.Contains(e.KeyCode))
-        {
-            pressedKeys.Add(e.KeyCode); 
-        }
-
-        switch (currentState)
-        {
-            case GameState.InGame:
-                HandleInGameControls(e);
-                break;
-            case GameState.Menu:
-                HandleMenuControls(e);
-                break;
-            case GameState.GameOver:
-                HandleGameOverControls(e);
-                break;
-            case GameState.Paused:
-                HandlePausedControls(e);
-                break;
-            case GameState.Lobby:
-                HandleLobbyControls(e);
-                break;
-        }
-    }
-
-    private void HandleInGameControls(KeyEventArgs e)
-    {
-        int dx = 0;
-        int dy = 0;
-
-        if (pressedKeys.Contains(Keys.W)) dy = -1;
-        if (pressedKeys.Contains(Keys.S)) dy = 1;
-        if (pressedKeys.Contains(Keys.A)) dx = -1;
-        if (pressedKeys.Contains(Keys.D)) dx = 1;
-
-        omar.MoveSmooth(dx, dy);
-
-        if (e.KeyCode == Keys.Escape)
-        {
-            PauseGame();
-            currentState = GameState.Paused;
-        }
-        else if (e.KeyCode == Keys.R)
-        {
-            RestartGame();
-        }
-    }
-
-    private void HandleMenuControls(KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
-        {
-            menu.MoveUp();
-            frame.Invalidate();
-        }
-        else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S)
-        {
-            menu.MoveDown();
-            frame.Invalidate();
-        }
-        else if (e.KeyCode == Keys.Enter)
-        {
-            string selectedOption = menu.GetSelectedOption();
-            if (selectedOption == "Jugar")
-            {
-                StartGame();
-            }
-            else if (selectedOption == "Opciones")
-            {
-                // Aquí puedes implementar el menú de opciones
-            }
-            else if (selectedOption == "Salir")
-            {
-                Application.Exit();
-            }
-        }
-        else if (e.KeyCode == Keys.Escape)
-        {
-          Application.Exit();  
-        }
-    }
-
-   private void HandleGameOverControls(KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
-        {
-            gameOverScreen.MoveUp();
-            frame.Invalidate();
-        }
-        else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S)
-        {
-            gameOverScreen.MoveDown();
-            frame.Invalidate();
-        }
-        else if (e.KeyCode == Keys.Enter)
-        {
-            string selectedOption = gameOverScreen.GetSelectedOption();
-            if (selectedOption == "Reintentar")
-            {
-                RestartGame();
-            }
-            else if (selectedOption == "Menu Principal")
-            {
-                RestartGame();
-                ShowMenu();
-            }
-        }
-    }
-
-    private void HandlePausedControls(KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
-        {
-            pauseScreen.MoveUp();
-            frame.Invalidate();
-        }
-        else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S)
-        {
-            pauseScreen.MoveDown();
-            frame.Invalidate();
-        }
-        else if (e.KeyCode == Keys.Enter)
-        {
-            string selectedOption = pauseScreen.GetSelectedOption();
-            if (selectedOption == "Continuar")
-            {
-                ResumeGame();
-            }
-            else if (selectedOption == "Menu Principal")
-            {
-                RestartGame();
-                ShowMenu();
-            }
-        }
-    }
-
-    private void HandleLobbyControls(KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
-        {
-            currentState = GameState.InGame;
-            frame.BackColor = Color.Gray; // Cambiar el fondo a gris
-            frame.Invalidate();
-        }
-    }
-
-    private void OnKeyUp(object? sender, KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.W || e.KeyCode == Keys.S)
-        {
-            omar.VelocityY = 0;
-        }
-
-        if (e.KeyCode == Keys.A || e.KeyCode == Keys.D)
-        {
-            omar.VelocityX = 0;
-        }
-        pressedKeys.Remove(e.KeyCode);
-    }
+    
 
     private void FramePaint(object? sender, PaintEventArgs e)
     {
