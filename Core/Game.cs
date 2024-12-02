@@ -2,112 +2,129 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+public enum GameState
+{
+    Menu,
+    InGame,
+    GameOver,
+    Paused,
+    Options
+}
+
 public class Game
 {
     private Frame frame;
     public Omar omar;
-    private bool isInGame;
-    private bool isGameOver;
-    private System.Windows.Forms.Timer gameTimer; // El temporizador para actualizar la pantalla
-    private HashSet<Keys> pressedKeys; // Usaremos un HashSet para almacenar las teclas presionadas
+    private GameState currentState; // Estado actual del juego
+    private System.Windows.Forms.Timer gameTimer;
+    private HashSet<Keys> pressedKeys;
     private Map map;
     private bool isFullScreen;
-    private const int GameWidth = 800;  // Ancho real del juego
-    private const int GameHeight = 600; // Alto real del juego
+    private const int GameWidth = 800;
+    private const int GameHeight = 600;
+
     public Game()
     {
         frame = new Frame();
-        omar = new Omar(100, 100, 40); // Inicializa a Omar con tamaño 40
-        map = new Map(omar); // Inicializamos el mapa
-        isInGame = false; // Inicialmente en el menú
-        pressedKeys = new HashSet<Keys>(); // Inicializar el HashSet
-        isFullScreen = false; // Inicialmente no está en pantalla completa
+        omar = new Omar(100, 100, 40); 
+        map = new Map(omar); 
+        pressedKeys = new HashSet<Keys>(); 
+        isFullScreen = false; 
 
+        currentState = GameState.Menu; // Inicialmente en el menú
 
-        // Suscribimos los eventos de teclas presionadas y liberadas
         frame.KeyDown += new KeyEventHandler(OnKeyDown);
         frame.KeyUp += new KeyEventHandler(OnKeyUp);
-        
-        // Permitir el enfoque del formulario para detectar las teclas
         frame.KeyPreview = true;
         frame.Paint += new PaintEventHandler(FramePaint);
 
-          // Inicializamos el temporizador
-        gameTimer = new System.Windows.Forms.Timer(); // Especificamos el namespace completo
-        gameTimer.Interval = 16; // Aproximadamente 60 FPS
+        gameTimer = new System.Windows.Forms.Timer();
+        gameTimer.Interval = 16; 
         gameTimer.Tick += GameTimer_Tick;   
     }
 
-    // Método para cambiar al estado de juego
+    
     public void StartGame()
     {
-        isInGame = true;
-        frame.BackColor = Color.Gray; // Cambiar el fondo a gris
-        gameTimer.Start(); // Iniciar el temporizador
-        frame.Invalidate(); // Forzar un repintado de la ventana
+        currentState = GameState.InGame;
+        frame.BackColor = Color.Gray;
+        gameTimer.Start();
+        frame.Invalidate();
     }
 
-      // Reiniciar el juego
     private void RestartGame()
     {
-        omar = new Omar(100, 100, 40); // Reinicia a Omar
-        map = new Map(omar); // Reinicia el mapa
-        isInGame = true; // Comienza el juego
-        isGameOver = false; // Reinicia el estado de Game Over
-        frame.BackColor = Color.Gray; // Fondo gris
-        gameTimer.Start(); // Inicia el temporizador
-        frame.Invalidate(); // Forzar repintado
+        omar = new Omar(100, 100, 40);
+        map = new Map(omar);
+        currentState = GameState.InGame;
+        frame.BackColor = Color.Gray;
+        gameTimer.Start();
+        frame.Invalidate();
     }
 
 
-    // Método para cambiar al estado de menú
     public void ShowMenu()
     {
-        isInGame = false;
-        frame.BackColor = Color.White; // Fondo blanco en el menú
-        gameTimer.Stop(); // Detener el temporizador
-        frame.Invalidate(); // Forzar un repintado de la ventana
+        currentState = GameState.Menu;
+        frame.BackColor = Color.White;
+        gameTimer.Stop();
+        frame.Invalidate();
     }
-     private void ToggleFullScreen()
+
+    public void PauseGame()
+    {
+        currentState = GameState.Paused;
+        frame.BackColor = Color.White;
+        gameTimer.Stop();
+        frame.Invalidate();
+    }
+
+    public void ResumeGame()
+    {
+        currentState = GameState.InGame;  
+        frame.BackColor = Color.Gray;    
+        gameTimer.Start();                
+        frame.Invalidate();               
+    }
+
+    private void ToggleFullScreen()
     {
         if (isFullScreen)
         {
-            // Regresar a la ventana normal
             frame.FormBorderStyle = FormBorderStyle.Sizable;
             frame.WindowState = FormWindowState.Normal;
-            frame.Size = new Size(800, 600); // Resolución original
+            frame.Size = new Size(800, 600); 
             isFullScreen = false;
         }
         else
         {
-               // Cambiar a pantalla completa
             frame.FormBorderStyle = FormBorderStyle.None;
             frame.WindowState = FormWindowState.Maximized;
             isFullScreen = true;
         }
     }
 
-  // Método que se llama cada vez que el temporizador "tickea" (cada 16 ms)
     private void GameTimer_Tick(object? sender, EventArgs e)
     {
-        if (isInGame)
+        switch (currentState)
         {
-            map.update();
-            frame.Invalidate();
-              if (omar.HP <= 0)
-            {
-                isInGame = false;
-                isGameOver = true;  // El juego ha terminado
-            }
-
+            case GameState.InGame:
+                map.update();
+                frame.Invalidate();
+                if (omar.HP <= 0)
+                {
+                    currentState = GameState.GameOver;
+                }
+                break;
+            case GameState.Paused:
+                break;
         }
     }
-    // Detecta la tecla presionada y cambia el estado del juego
+
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.F)
         {
-            // Cambiar a pantalla completa o volver a ventana normal al presionar F
             ToggleFullScreen();
         }
 
@@ -116,46 +133,76 @@ public class Game
             pressedKeys.Add(e.KeyCode); // Agregar la tecla al HashSet cuando se presiona
         }
 
-        if (isInGame)
+        switch (currentState)
         {
-            int dx = 0;
-            int dy = 0;
-
-            // Usamos las teclas presionadas para mover a Omar
-            if (pressedKeys.Contains(Keys.W)) dy = -1; // Mover hacia arriba
-            if (pressedKeys.Contains(Keys.S)) dy = 1;  // Mover hacia abajo
-            if (pressedKeys.Contains(Keys.A)) dx = -1; // Mover hacia la izquierda
-            if (pressedKeys.Contains(Keys.D)) dx = 1;  // Mover hacia la derecha
-            omar.MoveSmooth(dx, dy);
-
-            if (e.KeyCode == Keys.Escape)
-            {
-                ShowMenu();
-            }
-              else if (e.KeyCode == Keys.R) // Reiniciar el juego
-            {
-                RestartGame(); // Reinicia el juego
-            }
-        } else if (isGameOver){
-            if (e.KeyCode == Keys.Escape)
-            {
-                isGameOver = false;
-                RestartGame(); // Reinicia el juego
-                ShowMenu();
-
-            }
+            case GameState.InGame:
+                HandleInGameControls(e);
+                break;
+            case GameState.Menu:
+                HandleMenuControls(e);
+                break;
+            case GameState.GameOver:
+                HandleGameOverControls(e);
+                break;
+            case GameState.Paused:
+                HandlePausedControls(e);
+                break;
         }
-        else
+    }
+
+    private void HandleInGameControls(KeyEventArgs e)
+    {
+        int dx = 0;
+        int dy = 0;
+
+        if (pressedKeys.Contains(Keys.W)) dy = -1;
+        if (pressedKeys.Contains(Keys.S)) dy = 1;
+        if (pressedKeys.Contains(Keys.A)) dx = -1;
+        if (pressedKeys.Contains(Keys.D)) dx = 1;
+
+        omar.MoveSmooth(dx, dy);
+
+        if (e.KeyCode == Keys.Escape)
         {
-            // Si no está en el juego, solo manejamos las teclas de Enter y Escape
-            if (e.KeyCode == Keys.Enter)
-            {
-                StartGame();
-            }
-            else if (e.KeyCode == Keys.Escape)
-            {
-                Application.Exit();
-            }
+            PauseGame();
+            currentState = GameState.Paused;
+        }
+        else if (e.KeyCode == Keys.R)
+        {
+            RestartGame();
+        }
+    }
+
+    private void HandleMenuControls(KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter)
+        {
+            StartGame();
+        }
+        else if (e.KeyCode == Keys.Escape)
+        {
+            Application.Exit();
+        }
+    }
+
+    private void HandleGameOverControls(KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Escape)
+        {
+            RestartGame();
+            ShowMenu();
+        }
+    }
+
+    private void HandlePausedControls(KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Enter)
+        {
+            ResumeGame();
+            currentState = GameState.InGame;
+        } else if  (e.KeyCode == Keys.M){
+            RestartGame();
+            ShowMenu();
         }
     }
 
@@ -163,50 +210,41 @@ public class Game
     {
         if (e.KeyCode == Keys.W || e.KeyCode == Keys.S)
         {
-            omar.VelocityY = 0; // Detener el movimiento en Y
+            omar.VelocityY = 0;
         }
 
         if (e.KeyCode == Keys.A || e.KeyCode == Keys.D)
         {
-            omar.VelocityX = 0; // Detener el movimiento en X
+            omar.VelocityX = 0;
         }
         pressedKeys.Remove(e.KeyCode);
     }
 
-
     private void FramePaint(object? sender, PaintEventArgs e)
-    {   
-        if (isInGame)
+    {
+        switch (currentState)
         {
-            // Dibuja el mapa
-            map.Draw(e.Graphics);
-            // Dibuja a Omar solo si estamos en el juego
-            omar.Draw(e.Graphics);
-            // Mover a los enemigos hacia Omar
-            map.UpdateEnemies();
-            // Dibuja las estadísticas (en este caso, la velocidad)
-            frame.DrawStatistics(e.Graphics, omar);
-           
-        }
-        else
-        {
-             // Mostrar el mensaje de menú o derrota
-            if (isGameOver)
-            {
-                frame.DrawGameOverMessage(e.Graphics); // Mostrar mensaje de derrota
-            } else {
-            // Mostrar el mensaje de menú
-            frame.ShowMenuMessage(e.Graphics);
-        }
+            case GameState.InGame:
+                map.Draw(e.Graphics);
+                omar.Draw(e.Graphics);
+                frame.DrawStatistics(e.Graphics, omar);
+                break;
+            case GameState.GameOver:
+                frame.DrawGameOverMessage(e.Graphics);
+                break;
+            case GameState.Menu:
+                frame.ShowMenuMessage(e.Graphics);
+                break;
+            case GameState.Paused:
+                frame.DrawPausedMessage(e.Graphics);
+                break;
         }
     }
-
-    
 
     public static void Main(string[] args)
     {
         Game game = new Game();
-        game.ShowMenu(); // Empieza en el menú
+        game.ShowMenu(); 
         Application.Run(game.frame);
     }
 }
