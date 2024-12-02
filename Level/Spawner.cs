@@ -98,14 +98,29 @@ public class Spawner
 
             PointF spawnPoint = new PointF(x, y);
 
-            // Añadir una marca de spawn y esperar 1 segundo
+             // Determinar qué tipo de enemigo spawn
+            Enemy newEnemy;
+            int enemyTypeChance = random.Next(1, 101); // Probabilidad entre 1 y 100
 
-            // Crear y añadir el enemigo
-            enemies.Add(new Enemy(spawnPoint, Color.Brown, 30));
+            if (enemyTypeChance <= 10) // 10% de ser FastEnemy
+            {
+                newEnemy = new FastEnemy(spawnPoint); // Asumimos que ya tienes la clase FastEnemy
+            }
+            else if (enemyTypeChance <= 25) // 15% de ser SlowEnemy
+            {
+                newEnemy = new SlowEnemy(spawnPoint);
+            }
+            else // 75% de ser BasicEnemy
+            {
+                newEnemy = new BasicEnemy(spawnPoint);
+            }
+
+            // Añadir el enemigo creado a la lista de enemigos
+            enemies.Add(newEnemy);
 
             // Quitar la marca de spawn
             spawnMarkers.Remove(centerPoint);
-            await Task.Delay(200); // Tiempo entre enemigos
+                await Task.Delay(200); // Tiempo entre enemigos
         }
     }
 
