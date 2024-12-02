@@ -14,12 +14,18 @@ public class Omar
     private bool isTakingDamage; 
     private DateTime damageStartTime; 
     private bool isRed; 
+    private bool isInvulnerable;
+    private System.Windows.Forms.Timer invulnerabilityTimer;
+    public float range { get; set; }
+
+
 
     public Omar(float x, float y, float size)
     {
         X = x;
         Y = y;
         Size = size;
+        //stats iniciales
         Speed = 4;
         MaxSpeed = 9; 
         VelocityX = 0;
@@ -28,31 +34,43 @@ public class Omar
         HP = MaxHP;
         damage = 3;
         shotSpeed = 1;
+        range = 120; 
+
+        //
+        isInvulnerable = false;
+        // Inicializar el temporizador de invulnerabilidad
+        invulnerabilityTimer = new System.Windows.Forms.Timer();
+        invulnerabilityTimer.Interval = 1000; // 1 segundo
+        invulnerabilityTimer.Tick += (sender, e) =>
+        {
+            isInvulnerable = false; // Desactivar invulnerabilidad
+            invulnerabilityTimer.Stop(); // Detener el temporizador
+        };
     }
 
-        public void MoveSmooth(float deltaX, float deltaY)
-        {
-            // Calcular la longitud del vector (es decir, la distancia)
-            float magnitude = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+    public void MoveSmooth(float deltaX, float deltaY)
+    {
+         // Calcular la longitud del vector (es decir, la distancia)
+        float magnitude = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             
-            // Si no estamos moviéndonos, no normalizamos
-            if (magnitude != 0)
-            {
-                // Normalizamos el vector de dirección para que la velocidad sea constante en todas direcciones
-                deltaX = deltaX / magnitude;
-                deltaY = deltaY / magnitude;
-            }
-
-            // Multiplicamos por la velocidad deseada
-            VelocityX = deltaX * Speed;
-            VelocityY = deltaY * Speed;
+        // Si no estamos moviéndonos, no normalizamos
+        if (magnitude != 0)
+        {
+            // Normalizamos el vector de dirección para que la velocidad sea constante en todas direcciones
+            deltaX = deltaX / magnitude;
+            deltaY = deltaY / magnitude;
         }
 
-        // Actualizamos la posición basándonos en la velocidad (para movimiento suave)
-        public void UpdatePosition()
-        {
-            X += VelocityX;
-            Y += VelocityY;
+        // Multiplicamos por la velocidad deseada
+        VelocityX = deltaX * Speed;
+        VelocityY = deltaY * Speed;
+    }
+
+    // Actualizamos la posición basándonos en la velocidad (para movimiento suave)
+    public void UpdatePosition()
+    {
+        X += VelocityX;
+        Y += VelocityY;
 
         if (isTakingDamage)
         {
@@ -75,7 +93,7 @@ public class Omar
                 isRed = false; // Asegurarse de volver al estado blanco
             }
         }
-        }
+    }
 
 
     // Método para verificar la colisión con un rombo
@@ -149,11 +167,18 @@ public class Omar
 
     public void DecreaseHP(float amount)
     {
-        HP -= amount;
-        if (HP < 0) HP = 0;
-        isTakingDamage = true;
-        damageStartTime = DateTime.Now;
+        if (!isInvulnerable) // Solo perder HP si no es invulnerable
+        {
+            HP -= amount;
+            if (HP < 0) HP = 0;
+            isTakingDamage = true;
+            damageStartTime = DateTime.Now;
+            isInvulnerable = true;
+            invulnerabilityTimer.Start();
+        }
     }
+
+    
 
     public void IncreaseShotSpeed(int amount)
     {
@@ -173,6 +198,7 @@ public class Omar
         float dx = closestEnemy.Position.X - X;
         float dy = closestEnemy.Position.Y - Y;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
 
         // Normalizamos el vector dirección (hacia el enemigo)
         float directionX = dx / distance;
@@ -208,6 +234,9 @@ public class Omar
         float directionX = dx / distance;
         float directionY = dy / distance;
 
+        // Verificar si el enemigo está dentro del rango
+        if (distance > range) return;
+
         // Crear una nueva bala saliendo desde el triángulo
         float bulletStartX = X + directionX * 30; // Coordenada inicial X de la bala
         float bulletStartY = Y + directionY * 30 + 20; // Coordenada inicial Y de la bala
@@ -221,5 +250,9 @@ public class Omar
         Pen blackPen = new Pen(Color.Black, 2);
         g.FillEllipse(brush, X - Size / 2, Y - Size / 2, Size, Size);
         g.DrawEllipse(blackPen, X - Size / 2, Y - Size / 2, Size, Size);
+
+        // Dibujar el rango de disparo
+        Pen rangePen = new Pen(Color.LightBlue, 1);
+        g.DrawEllipse(rangePen, X - range, Y - range, range * 2, range * 2);
     }
 }

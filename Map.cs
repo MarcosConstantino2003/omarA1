@@ -1,7 +1,6 @@
 public class Map
 {
-    private List<Diamond> greenDiamonds; 
-    private List<Diamond> purpleDiamonds; 
+    private List<Diamond> diamonds; 
     private List<Enemy> enemies;
     private List<Enemy> enemiesToRemove;
     private List<PointF> spawnMarkers; 
@@ -10,17 +9,18 @@ public class Map
     private List<Bullet> bulletsToRemove;
 
     private Random random;
-    private System.Windows.Forms.Timer greenDiamondTimer;
-    private System.Windows.Forms.Timer purpleDiamondTimer;
+    private System.Windows.Forms.Timer diamondTimer;
     private System.Windows.Forms.Timer enemyTimer;
     private System.Windows.Forms.Timer heartTimer;
     private System.Windows.Forms.Timer shootTimer;
+    private string floatingText = "";
+    private PointF floatingTextPosition = PointF.Empty;
+    private System.Windows.Forms.Timer floatingTextTimer;
     private Omar omar;
     public Map(Omar omar)
     {
         this.omar = omar;
-        greenDiamonds = new List<Diamond>();
-        purpleDiamonds = new List<Diamond>();
+        diamonds = new List<Diamond>();
         enemies = new List<Enemy>();
         enemiesToRemove = new List<Enemy>();
         spawnMarkers = new List<PointF>(); 
@@ -28,17 +28,13 @@ public class Map
         bullets = new List<Bullet>();
         bulletsToRemove = new List<Bullet>();
         random = new Random();
-        // Temporizador para generar rombos verdes cada 6 segundos
-        greenDiamondTimer = new System.Windows.Forms.Timer();
-        greenDiamondTimer.Interval = 6000; 
-        greenDiamondTimer.Tick += SpawnDiamonds;
-        greenDiamondTimer.Start();
+        floatingTextTimer = new System.Windows.Forms.Timer();;
 
-        // Temporizador para generar rombos rojos cada 12 segundos
-        purpleDiamondTimer = new System.Windows.Forms.Timer();
-        purpleDiamondTimer.Interval = 12000; 
-        purpleDiamondTimer.Tick += SpawnPurpleDiamonds;
-        purpleDiamondTimer.Start();
+        // Temporizador para generar rombos verdes cada 6 segundos
+        diamondTimer = new System.Windows.Forms.Timer();
+        diamondTimer.Interval = 6000; 
+        diamondTimer.Tick += SpawnDiamonds;
+        diamondTimer.Start();
 
          // Temporizador para generar enemigos cada 4 segundos
         enemyTimer = new System.Windows.Forms.Timer();
@@ -67,13 +63,12 @@ public class Map
 
     private void SpawnDiamonds(object? sender, EventArgs e)
     {
-        // Generar rombos en posiciones aleatorias
-        float x = random.Next(50, 750); // Posición aleatoria en el rango X
-        float y = random.Next(50, 550); // Posición aleatoria en el rango Y
+        float x = random.Next(50, 750); // Posición aleatoria en X
+        float y = random.Next(50, 550); // Posición aleatoria en Y
 
-        // Elegir aleatoriamente entre verde, celeste y negro
+        // Elegir aleatoriamente el color del rombo
         Color diamondColor;
-        int randomChoice = random.Next(0, 3); // 0 para verde, 1 para celeste, 2 para negro
+        int randomChoice = random.Next(0, 4); // 0 para verde, 1 para celeste, 2 para negro, 3 para morado
 
         switch (randomChoice)
         {
@@ -81,27 +76,21 @@ public class Map
                 diamondColor = Color.Green;
                 break;
             case 1:
-                diamondColor = Color.Cyan; // Celeste
+                diamondColor = Color.Cyan;
                 break;
             case 2:
-                diamondColor = Color.Black; // Negro
+                diamondColor = Color.Black;
+                break;
+            case 3:
+                diamondColor = Color.Purple;
                 break;
             default:
                 diamondColor = Color.Green; // Default verde
                 break;
         }
 
-        // Añadir rombo con el color elegido
-        greenDiamonds.Add(new Diamond(new PointF(x, y), diamondColor, 20));
-    }
-    private void SpawnPurpleDiamonds(object? sender, EventArgs e)
-    {
-        // Generar rombos rojos en posiciones aleatorias
-        float x = random.Next(50, 750); // Posición aleatoria en el rango X
-        float y = random.Next(50, 550); // Posición aleatoria en el rango Y
-
-        // Añadir rombos rojos
-        purpleDiamonds.Add(new Diamond(new PointF(x, y), Color.Purple, 20));
+        // Añadir el rombo a la lista común
+        diamonds.Add(new Diamond(new PointF(x, y), diamondColor, 20));
     }
 
      // Generar enemigos
@@ -168,55 +157,95 @@ public class Map
     public void CheckCollisions()
     {
         // Revisar las colisiones con los rombos verdes
-        foreach (var diamond in greenDiamonds)
+        foreach (var diamond in diamonds)
         {
             if (omar.IsCollidingWithDiamond(diamond))
-        {
-            if (diamond.Color == Color.Green)
             {
-                omar.IncreaseSpeed(1);  
-            }
-            else if (diamond.Color == Color.Cyan) 
+                string effectText = ""; // Texto del efecto para mostrar
+
+                if (diamond.Color == Color.Green)
+                {
+                    omar.IncreaseSpeed(1);  
+                    effectText = "+1 Speed";
+                }
+                else if (diamond.Color == Color.Cyan) 
+                {
+                    omar.IncreaseShotSpeed(2); 
+                    shootTimer.Interval =  omar.GetShootDelay();
+                    effectText = "+2 Shot Speed";
+                }
+                else if (diamond.Color == Color.Black)
+                {
+                    omar.IncreaseDamage(1); 
+                    effectText = "+1 Damage";
+                }
+                else if (diamond.Color == Color.Purple)
+                {
+                    omar.range += 20;
+                    effectText = "+20 Range"; 
+                }
+            // Establecer texto flotante y su posición
+            floatingText = effectText;
+            floatingTextPosition = new PointF(omar.X, omar.Y - 20);
+
+            // Temporizador para eliminar el texto flotante
+            if (floatingTextTimer != null)
             {
-                omar.IncreaseShotSpeed(2); 
-                shootTimer.Interval =  omar.GetShootDelay();
-            }
-            else if (diamond.Color == Color.Black)
-            {
-                omar.IncreaseDamage(1); 
+                floatingTextTimer.Stop();
+                floatingTextTimer.Dispose();
             }
 
-            greenDiamonds.Remove(diamond); 
+            floatingTextTimer = new System.Windows.Forms.Timer();
+            floatingTextTimer.Interval = 2000; // 2 segundos
+            floatingTextTimer.Tick += (sender, e) =>
+            {
+                floatingText = "";
+                floatingTextTimer.Stop();
+                floatingTextTimer.Dispose();
+            };
+            floatingTextTimer.Start();
+
+            diamonds.Remove(diamond);
             break; 
         }
         }
 
-        // Revisar las colisiones con los rombos rojos
-        foreach (var purpleDiamond in purpleDiamonds)
-        {
-            if (omar.IsCollidingWithDiamond(purpleDiamond))
-            {
-                omar.DecreaseSpeed(0.5f);  
-                purpleDiamonds.Remove(purpleDiamond); 
-                break; 
-            }
-        }
         // Revisar colisiones con los enemigos
         foreach (var enemy in enemies)
         {
             if (omar.IsCollidingWithEnemy(enemy))
             {
                 omar.DecreaseHP(3);  
-                enemies.Remove(enemy); 
                 break;
             }
         }
          
     foreach (var heart in hearts)
     {
-        if (omar.IsCollidingWithHeart(heart))
+       if (omar.IsCollidingWithHeart(heart))
         {
             omar.IncreaseHP(4);  // Aumenta 4 HP por corazón recogido
+
+            // Establecer texto flotante
+            floatingText = "+4 HP";
+
+            // Temporizador para eliminar el texto flotante
+            if (floatingTextTimer != null)
+            {
+                floatingTextTimer.Stop();
+                floatingTextTimer.Dispose();
+            }
+
+            floatingTextTimer = new System.Windows.Forms.Timer();
+            floatingTextTimer.Interval = 2000; // 2 segundos
+            floatingTextTimer.Tick += (sender, e) =>
+            {
+                floatingText = "";
+                floatingTextTimer.Stop();
+                floatingTextTimer.Dispose();
+            };
+            floatingTextTimer.Start();
+
             hearts.Remove(heart); // Eliminar el corazón al ser tocado
             break; // Salir del ciclo ya que no es necesario seguir buscando
         }
@@ -298,51 +327,58 @@ public class Map
 
     public void UpdateDiamonds()
     {
-        // Eliminar diamantes que hayan estado en el juego por más de 7 segundos
-        greenDiamonds.RemoveAll(diamond => diamond.IsExpired());
-        purpleDiamonds.RemoveAll(diamond => diamond.IsExpired());
+        diamonds.RemoveAll(diamond => diamond.IsExpired());
         hearts.RemoveAll(heart=> heart.IsExpired());
     }
 
     // Método para dibujar los rombos en el gráfico
     public void Draw(Graphics g)
     {
-        // Dibujar los rombos verdes
-        foreach (var diamond in greenDiamonds)
-        {
-            diamond.Draw(g);
-        }
-
-        // Dibujar los rombos rojos
-        foreach (var diamond in purpleDiamonds)
+        foreach (var diamond in diamonds)
         {
             diamond.Draw(g);
         }
          foreach (var enemy in enemies)
         {
-            enemy.Draw(g); // Dibuja cada enemigo
+            enemy.Draw(g); 
         }
         foreach (var marker in spawnMarkers)
         {
             DrawSpawnMarker(g, marker);
         }
-          // Dibujar los corazones
         foreach (var heart in hearts)
         {
             heart.Draw(g);
         }
-        // Obtener el enemigo más cercano a Omar
         Enemy? closestEnemy = GetClosestEnemy();
-
-        // Verificar si el enemigo más cercano es nulo
         if (closestEnemy != null)
         {
-            // Dibujar el triángulo apuntando hacia el enemigo más cercano
             omar.DrawTriangle(g, closestEnemy);
         }
         foreach (var bullet in bullets)
         {
             bullet.Draw(g);
+        }
+        // Dibujar texto flotante si existe
+        if (!string.IsNullOrEmpty(floatingText))
+        {
+            Font font = new Font("Arial", 12, FontStyle.Bold);
+            Brush textBrush = Brushes.Yellow;
+            Brush shadowBrush = Brushes.Black;
+
+            // Medir el tamaño del texto
+            SizeF textSize = g.MeasureString(floatingText, font);
+
+            // Calcular posición del texto centrado sobre Omar
+            PointF textPosition = new PointF(
+                omar.X  - (textSize.Width / 2), // Centrado en X
+                omar.Y - omar.Size // Justo encima en Y
+            );
+
+            // Sombra negra para el texto
+            g.DrawString(floatingText, font, shadowBrush, textPosition.X + 1, textPosition.Y + 1);
+            // Texto principal en amarillo
+            g.DrawString(floatingText, font, textBrush, textPosition);
         }
     }
     private void DrawSpawnMarker(Graphics g, PointF position)

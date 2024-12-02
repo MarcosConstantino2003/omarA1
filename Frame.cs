@@ -6,7 +6,7 @@ public class Frame : Form
 {
     public Frame()
     {
-        this.Text = "Juego en C#";
+        this.Text = "Omar's Brotato";
         this.ClientSize = new Size(800, 600);
         this.DoubleBuffered = true; // Para evitar parpadeos
     }
@@ -20,52 +20,58 @@ public class Frame : Form
     }
 
     
-public void DrawStatistics(Graphics g, Omar omar)
-{
-    // Dibujar estadísticas en la parte superior derecha
-    Font font = new Font("Arial", 14, FontStyle.Bold);
-    Brush whiteBrush = Brushes.White;
-    Brush blackBrush = Brushes.Black;
-    Pen blackPen = new Pen(Color.Black, 2);
+    public void DrawStatistics(Graphics g, Omar omar)
+    {
+        // Dibujar estadísticas en la parte superior derecha
+        Font font = new Font("Arial", 14, FontStyle.Bold);
+        Brush whiteBrush = Brushes.White;
+        Brush blackBrush = Brushes.Black;
+        Pen blackPen = new Pen(Color.Black, 2);
 
-    // Dibujar velocidad
-    string speedText = $"Speed: {omar.Speed}";
-    SizeF speedSize = g.MeasureString(speedText, font);
+        // Espaciado entre líneas
+        int lineHeight = 20;
 
-    // Cambiar el color del texto a rojo oscuro si la velocidad es igual a MaxSpeed
-    Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
+        // Dibujar velocidad
+        string speedText = $"Speed: {omar.Speed}";
+        SizeF speedSize = g.MeasureString(speedText, font);
 
-    // Dibujar el texto con borde negro
-    g.DrawString(speedText, font, blackBrush, this.ClientSize.Width - speedSize.Width - 10, 10);
-    g.DrawString(speedText, font, speedBrush, this.ClientSize.Width - speedSize.Width - 9, 9); // Borde negro
+        Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
 
-    // Dibujar HP
-    string hpText = $"HP: {omar.HP}/{omar.MaxHP}";
-    SizeF hpSize = g.MeasureString(hpText, font);
+        g.DrawString(speedText, font, blackBrush, this.ClientSize.Width - speedSize.Width - 10, 10);
+        g.DrawString(speedText, font, speedBrush, this.ClientSize.Width - speedSize.Width - 9, 9);
 
-    // Cambiar color si HP está lleno
-    Brush hpBrush = (omar.HP == omar.MaxHP) ? Brushes.DarkRed : whiteBrush;
+        // Dibujar HP
+        string hpText = $"HP: {omar.HP}/{omar.MaxHP}";
+        SizeF hpSize = g.MeasureString(hpText, font);
 
-    // Dibujar el texto con borde negro
-    g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 30);
-    g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 29); // Borde negro
+        Brush hpBrush = (omar.HP == omar.MaxHP) ? Brushes.DarkRed : whiteBrush;
 
-    // Dibujar daño
-    string dmgText = $"Damage: {omar.damage}";
-    SizeF dmgSize = g.MeasureString(dmgText, font);
+        g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 10 + lineHeight);
+        g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 9 + lineHeight);
 
-    // Dibujar el texto con borde negro
-    g.DrawString(dmgText, font, blackBrush, this.ClientSize.Width - dmgSize.Width - 10, 50);
-    g.DrawString(dmgText, font, whiteBrush, this.ClientSize.Width - dmgSize.Width - 9, 49); // Borde negro
+        // Dibujar daño
+        string dmgText = $"Damage: {omar.damage}";
+        SizeF dmgSize = g.MeasureString(dmgText, font);
 
-    // Dibujar velocidad de disparo
-    string shotSpeedText = $"ShotSpeed: {omar.shotSpeed}"; // Multiplícalo por 100 para mostrar el intervalo real
-    SizeF shotSpeedSize = g.MeasureString(shotSpeedText, font);
+        g.DrawString(dmgText, font, blackBrush, this.ClientSize.Width - dmgSize.Width - 10, 10 + lineHeight * 2);
+        g.DrawString(dmgText, font, whiteBrush, this.ClientSize.Width - dmgSize.Width - 9, 9 + lineHeight * 2);
 
-    // Dibujar el texto con borde negro
-    g.DrawString(shotSpeedText, font, blackBrush, this.ClientSize.Width - shotSpeedSize.Width - 10, 70);
-    g.DrawString(shotSpeedText, font, whiteBrush, this.ClientSize.Width - shotSpeedSize.Width - 9, 69); // Borde negro
-}
+        // Dibujar velocidad de disparo
+        string shotSpeedText = $"ShotSpeed: {omar.shotSpeed}";
+        SizeF shotSpeedSize = g.MeasureString(shotSpeedText, font);
+
+        g.DrawString(shotSpeedText, font, blackBrush, this.ClientSize.Width - shotSpeedSize.Width - 10, 10 + lineHeight * 3);
+        g.DrawString(shotSpeedText, font, whiteBrush, this.ClientSize.Width - shotSpeedSize.Width - 9, 9 + lineHeight * 3);
+
+        // Dibujar rango
+        string rangeText = $"Range: {omar.range}";
+        SizeF rangeSize = g.MeasureString(rangeText, font);
+
+
+        g.DrawString(rangeText, font, blackBrush, this.ClientSize.Width - rangeSize.Width - 10, 10 + lineHeight * 4);
+        g.DrawString(rangeText, font, whiteBrush, this.ClientSize.Width - rangeSize.Width - 9, 9 + lineHeight * 4);
+    }
+
 
  // Método para dibujar el mensaje de derrota
     public void DrawGameOverMessage(Graphics g)
