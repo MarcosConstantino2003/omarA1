@@ -72,63 +72,74 @@ public class Spawner
 
     private async void SpawnEnemies(object? sender, EventArgs e)
     {
-        // Generar un número aleatorio de enemigos entre 4 y 8
-        int numberOfEnemies = random.Next(4, 9);
+        int numberOfEnemies = random.Next(3, 7);
+        PointF centerPoint = GetValidSpawnPoint();
 
-        // Determinar un punto central válido que no esté cerca de Omar
+        spawnMarkers.Add(centerPoint);
+        await Task.Delay(400); 
+
+        for (int i = 0; i < numberOfEnemies; i++)
+        {
+            PointF spawnPoint = GetRandomSpawnPoint(centerPoint);
+            Enemy newEnemy = GetRandomEnemyType(spawnPoint);
+
+            enemies.Add(newEnemy);
+
+            spawnMarkers.Remove(centerPoint);
+            await Task.Delay(200); // Tiempo entre enemigos
+        }
+    }
+
+    // Método privado para obtener un punto de spawn válido
+    private PointF GetValidSpawnPoint()
+    {
         PointF centerPoint;
         do
         {
-            float centerX = random.Next(100, 700); // Evitamos los bordes
+            float centerX = random.Next(100, 700);
             float centerY = random.Next(100, 500);
             centerPoint = new PointF(centerX, centerY);
         }
-        while (IsTooCloseToOmar(centerPoint)); // Asegurar que el punto no esté cerca de Omar
-        spawnMarkers.Add(centerPoint);
-        await Task.Delay(400); // Tiempo entre enemigos
-        // Spawnear los enemigos con una leve diferencia de tiempo
-        for (int i = 0; i < numberOfEnemies; i++)
+        while (IsTooCloseToOmar(centerPoint)); 
+        return centerPoint;
+    }
+
+    // Método privado para obtener un punto de spawn aleatorio alrededor del centro
+    private PointF GetRandomSpawnPoint(PointF centerPoint)
+    {
+        float offsetX = random.Next(-30, 31); 
+        float offsetY = random.Next(-30, 31);
+
+        float x = Math.Clamp(centerPoint.X + offsetX, 50, 750);
+        float y = Math.Clamp(centerPoint.Y + offsetY, 50, 550);
+
+        return new PointF(x, y);
+    }
+
+    // Método privado para obtener un tipo de enemigo aleatorio
+    private Enemy GetRandomEnemyType(PointF spawnPoint)
+    {
+        int enemyTypeChance = random.Next(1, 101); 
+
+        if (enemyTypeChance <= 10) 
         {
-            // Generar un desplazamiento pequeño para cada enemigo (cerca del centro)
-            float offsetX = random.Next(-30, 31); // Hasta 30px alrededor del centro
-            float offsetY = random.Next(-30, 31);
-
-            float x = Math.Clamp(centerPoint.X + offsetX, 50, 750); // Aseguramos que no salgan de los límites
-            float y = Math.Clamp(centerPoint.Y + offsetY, 50, 550);
-
-            PointF spawnPoint = new PointF(x, y);
-
-             // Determinar qué tipo de enemigo spawn
-            Enemy newEnemy;
-            int enemyTypeChance = random.Next(1, 101); // Probabilidad entre 1 y 100
-
-            if (enemyTypeChance <= 10) // 10% de ser FastEnemy
-            {
-                newEnemy = new FastEnemy(spawnPoint); // Asumimos que ya tienes la clase FastEnemy
-            }
-            else if (enemyTypeChance <= 25) // 15% de ser SlowEnemy
-            {
-                newEnemy = new SlowEnemy(spawnPoint);
-            }
-            else // 75% de ser BasicEnemy
-            {
-                newEnemy = new BasicEnemy(spawnPoint);
-            }
-
-            // Añadir el enemigo creado a la lista de enemigos
-            enemies.Add(newEnemy);
-
-            // Quitar la marca de spawn
-            spawnMarkers.Remove(centerPoint);
-                await Task.Delay(200); // Tiempo entre enemigos
+            return new FastEnemy(spawnPoint); 
+        }
+        else if (enemyTypeChance <= 25) 
+        {
+            return new SlowEnemy(spawnPoint);
+        }
+        else 
+        {
+            return new BasicEnemy(spawnPoint);
         }
     }
 
     private bool IsTooCloseToOmar(PointF point)
     {
-        const float minimumDistance = 100; // Distancia mínima permitida
-        float dx = point.X - omar.X; // Diferencia en X
-        float dy = point.Y - omar.Y; // Diferencia en Y
+        const float minimumDistance = 100; 
+        float dx = point.X - omar.X; 
+        float dy = point.Y - omar.Y; 
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
         return distance < minimumDistance;
     }

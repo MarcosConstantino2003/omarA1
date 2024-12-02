@@ -26,8 +26,7 @@ public class Map
         random = new Random();
 
         spawner = new Spawner(omar, diamonds, enemies, hearts);
-        collisionHandler = new CollisionHandler(omar, diamonds, enemies, hearts); // Inicializamos el CollisionHandler
-
+        collisionHandler = new CollisionHandler(omar, diamonds, enemies, hearts);
         shootTimer = new System.Windows.Forms.Timer();
         shootTimer.Interval =  omar.GetShootDelay(); 
         shootTimer.Tick += (sender, e) =>
@@ -70,8 +69,14 @@ public class Map
         UpdateEnemies();
         UpdateBullets();
         UpdateDiamonds();
+        UpdateShootSpeed();
     }
-    // Método para mover los enemigos hacia Omar
+
+    public void UpdateShootSpeed()
+    {
+        shootTimer.Interval = omar.GetShootDelay(); 
+    }
+
     public void UpdateEnemies()
     {
         foreach (var enemy in enemies)
