@@ -22,6 +22,9 @@ public class Game
     private bool isFullScreen;
     private const int GameWidth = 800;
     private const int GameHeight = 600;
+    private Menu menu;
+    private PauseScreen pauseScreen;
+    private GameOverScreen gameOverScreen;
 
     public Game()
     {
@@ -30,7 +33,9 @@ public class Game
         map = new Map(omar); 
         pressedKeys = new HashSet<Keys>(); 
         isFullScreen = false; 
-
+        menu = new Menu();
+        pauseScreen = new PauseScreen();
+        gameOverScreen = new GameOverScreen();
         currentState = GameState.Menu; // Inicialmente en el menú
 
         frame.KeyDown += new KeyEventHandler(OnKeyDown);
@@ -130,7 +135,7 @@ public class Game
 
         if (!pressedKeys.Contains(e.KeyCode))
         {
-            pressedKeys.Add(e.KeyCode); // Agregar la tecla al HashSet cuando se presiona
+            pressedKeys.Add(e.KeyCode); 
         }
 
         switch (currentState)
@@ -174,35 +179,90 @@ public class Game
     }
 
     private void HandleMenuControls(KeyEventArgs e)
-    {
-        if (e.KeyCode == Keys.Enter)
         {
-            StartGame();
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
+        {
+            menu.MoveUp();
+            frame.Invalidate();
+        }
+        else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S)
+        {
+            menu.MoveDown();
+            frame.Invalidate();
+        }
+        else if (e.KeyCode == Keys.Enter)
+        {
+            string selectedOption = menu.GetSelectedOption();
+            if (selectedOption == "Jugar")
+            {
+                StartGame();
+            }
+            else if (selectedOption == "Opciones")
+            {
+                // Aquí puedes implementar el menú de opciones
+            }
+            else if (selectedOption == "Salir")
+            {
+                Application.Exit();
+            }
         }
         else if (e.KeyCode == Keys.Escape)
         {
-            Application.Exit();
+          Application.Exit();  
         }
     }
 
-    private void HandleGameOverControls(KeyEventArgs e)
+   private void HandleGameOverControls(KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.Escape)
+        if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
         {
-            RestartGame();
-            ShowMenu();
+            gameOverScreen.MoveUp();
+            frame.Invalidate();
+        }
+        else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S)
+        {
+            gameOverScreen.MoveDown();
+            frame.Invalidate();
+        }
+        else if (e.KeyCode == Keys.Enter)
+        {
+            string selectedOption = gameOverScreen.GetSelectedOption();
+            if (selectedOption == "Reintentar")
+            {
+                RestartGame();
+            }
+            else if (selectedOption == "Menu Principal")
+            {
+                RestartGame();
+                ShowMenu();
+            }
         }
     }
 
     private void HandlePausedControls(KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Enter)
+        if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
         {
-            ResumeGame();
-            currentState = GameState.InGame;
-        } else if  (e.KeyCode == Keys.M){
-            RestartGame();
-            ShowMenu();
+            pauseScreen.MoveUp();
+            frame.Invalidate();
+        }
+        else if (e.KeyCode == Keys.Down || e.KeyCode == Keys.S)
+        {
+            pauseScreen.MoveDown();
+            frame.Invalidate();
+        }
+        else if (e.KeyCode == Keys.Enter)
+        {
+            string selectedOption = pauseScreen.GetSelectedOption();
+            if (selectedOption == "Continuar")
+            {
+                ResumeGame();
+            }
+            else if (selectedOption == "Menu Principal")
+            {
+                RestartGame();
+                ShowMenu();
+            }
         }
     }
 
@@ -229,16 +289,16 @@ public class Game
                 omar.Draw(e.Graphics);
                 frame.DrawStatistics(e.Graphics, omar);
                 break;
-            case GameState.GameOver:
-                frame.DrawGameOverMessage(e.Graphics);
-                break;
             case GameState.Menu:
-                frame.ShowMenuMessage(e.Graphics);
+                menu.Draw(e.Graphics, frame.ClientSize);
                 break;
             case GameState.Paused:
-                frame.DrawPausedMessage(e.Graphics);
+                pauseScreen.Draw(e.Graphics, frame.ClientSize);
                 break;
-        }
+            case GameState.GameOver:
+                gameOverScreen.Draw(e.Graphics, frame.ClientSize);
+                break;
+            }
     }
 
     public static void Main(string[] args)
