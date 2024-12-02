@@ -126,6 +126,7 @@ public class Map
         diamonds.Clear();
         hearts.Clear();
         spawner.ResetTimers();
+        bullets.Clear();
     }   
 
     // Método para dibujar los rombos en el gráfico

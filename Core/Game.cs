@@ -1,8 +1,3 @@
-using System;
-using System.ComponentModel.Design.Serialization;
-using System.Drawing;
-using System.Windows.Forms;
-
 public enum GameState
 {
     Menu,
@@ -29,17 +24,18 @@ public class Game
     public GameOverScreen gameOverScreen;
     public LobbyScreen lobbyScreen;
     private DateTime gameStartTime;
-    private TimeSpan gameDuration = TimeSpan.FromSeconds(10); // Duración del juego
+    private TimeSpan gameDuration = TimeSpan.FromSeconds(11); // Duración del juego
     private TimeSpan pausedDuration = TimeSpan.Zero; // Acumula el tiempo en pausa
     private DateTime pauseStartTime; // Marca cuándo empezó la pausa
     private InputHandler inputHandler;
-    
+    private int waveCount = 1;  // Contador de oleadas
+
 
 
     public Game()
     {
         frame = new Frame();
-        omar = new Omar(100, 100, 40); 
+        omar = new Omar(400, 290, 40); 
         map = new Map(omar); 
         pressedKeys = new HashSet<Keys>(); 
         isFullScreen = false; 
@@ -74,13 +70,10 @@ public class Game
 
     public void RestartGame()
     {
-        omar = new Omar(100, 100, 40);
+        omar = new Omar(400, 290, 40);
         map = new Map(omar);
-        currentState = GameState.InGame;
-        frame.BackColor = Color.Gray;
-        gameTimer.Start();
-        frame.Invalidate();
-        UpdateStartTime();
+        waveCount = 1;
+        StartGame();
         inputHandler.ResetInputHandler(omar);
     }
 
@@ -119,6 +112,7 @@ public class Game
         currentState = GameState.Lobby;
         gameTimer.Stop();
         frame.Invalidate();
+        waveCount++;
     }
 
     public void ResumeGame()
@@ -171,7 +165,7 @@ public class Game
                 map.Draw(e.Graphics);
                 omar.Draw(e.Graphics);
                 frame.DrawStatistics(e.Graphics, omar);
-                frame.DrawTimer(e.Graphics, GetTimeLeft());
+                frame.DrawTimer(e.Graphics, GetTimeLeft(),waveCount);
                 break;
             case GameState.Menu:
                 menu.Draw(e.Graphics, frame.ClientSize);

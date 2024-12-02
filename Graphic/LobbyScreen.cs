@@ -8,7 +8,7 @@ public class LobbyScreen
         g.Clear(Color.LightBlue);
 
         // Texto principal
-        string message = "¡Descansa!";
+        string message = "¡Lobby nashe!";
         Font font = new Font("Arial", 36, FontStyle.Bold);
         Brush brush = Brushes.Black;
 
