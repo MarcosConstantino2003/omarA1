@@ -1,29 +1,18 @@
-public class Heart
+public class Heart : Entity
 {
-    public PointF Position { get; set; }
     public Color Color { get; set; }
-    public float Size { get; set; }
-    public DateTime CreationTime { get; } // Fecha de creación
-
 
     public Heart(PointF position, Color color, float size)
+        : base(position, size)
     {
-        Position = position;
         Color = color;
-        Size = size;
-        CreationTime = DateTime.Now; // Establecer el tiempo de creación
-    }
-     public bool IsExpired()
-    {
-        return (DateTime.Now - CreationTime).TotalSeconds >= 11;
     }
 
-    public void Draw(Graphics g)
+    public override void Draw(Graphics g)
     {
         Brush brush = new SolidBrush(Color);
         Pen blackPen = new Pen(Color.Black, 2);
 
-        // Dibujar el corazón (utilizando 2 círculos y un triángulo para la forma de corazón)
         g.FillPolygon(brush, new PointF[] 
         {
             new PointF(Position.X, Position.Y + Size / 3),
@@ -33,7 +22,6 @@ public class Heart
             new PointF(Position.X, Position.Y + Size / 3)
         });
 
-        // Borde negro
         g.DrawPolygon(blackPen, new PointF[] 
         {
             new PointF(Position.X, Position.Y + Size / 3),
@@ -42,5 +30,9 @@ public class Heart
             new PointF(Position.X + Size / 2, Position.Y + Size),
             new PointF(Position.X, Position.Y + Size / 3)
         });
+    }
+    public bool IsExpired()
+    {
+        return (DateTime.Now - CreationTime).TotalSeconds >= 11;
     }
 }

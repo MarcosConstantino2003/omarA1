@@ -1,29 +1,24 @@
-public class Diamond
+public class Diamond : Entity
 {
-    public PointF Position { get; set; }
     public Color Color { get; set; }
-    public float Size { get; set; }
-    public DateTime CreationTime { get; } // Fecha de creación
 
     public Diamond(PointF position, Color color, float size)
+        : base(position, size)
     {
-        Position = position;
         Color = color;
-        Size = size;
-        CreationTime = DateTime.Now; // Establecer el tiempo de creación
     }
+
      public bool IsExpired()
     {
         return (DateTime.Now - CreationTime).TotalSeconds >= 7;
     }
 
-    public void Draw(Graphics g)
+    public override void Draw(Graphics g)
     {
         Brush brush = new SolidBrush(Color);
         Pen blackPen = new Pen(Color.Black, 2);
 
-        // Dibujar el rombo
-        g.FillPolygon(brush, new PointF[]
+        g.FillPolygon(brush, new PointF[] 
         {
             new PointF(Position.X + Size / 2, Position.Y),
             new PointF(Position.X + Size, Position.Y + Size / 2),
@@ -31,8 +26,7 @@ public class Diamond
             new PointF(Position.X, Position.Y + Size / 2)
         });
 
-        // Dibujar borde negro
-        g.DrawPolygon(blackPen, new PointF[]
+        g.DrawPolygon(blackPen, new PointF[] 
         {
             new PointF(Position.X + Size / 2, Position.Y),
             new PointF(Position.X + Size, Position.Y + Size / 2),
@@ -40,4 +34,5 @@ public class Diamond
             new PointF(Position.X, Position.Y + Size / 2)
         });
     }
+
 }
