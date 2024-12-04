@@ -48,6 +48,9 @@ public class InputHandler
             case GameState.Lobby:
                 HandleLobbyControls(e);
                 break;
+            case GameState.Win:
+                HandleWinScreenControls(e);
+                break;
         }
     }
 
@@ -180,6 +183,14 @@ public class InputHandler
         if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
         {
             game.ResetGameForLobby();
+        }
+    }
+
+    private void HandleWinScreenControls(KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
+        {
+            game.ShowMenu(); 
         }
     }
 

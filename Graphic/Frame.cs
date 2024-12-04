@@ -31,45 +31,44 @@ public class Frame : Form
         // Espaciado entre líneas
         int lineHeight = 20;
 
-        // Dibujar velocidad
-        string speedText = $"Speed: {omar.Speed}";
-        SizeF speedSize = g.MeasureString(speedText, font);
-
-        Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
-
-        g.DrawString(speedText, font, blackBrush, this.ClientSize.Width - speedSize.Width - 10, 10);
-        g.DrawString(speedText, font, speedBrush, this.ClientSize.Width - speedSize.Width - 9, 9);
-
         // Dibujar HP
         string hpText = $"HP: {omar.HP}/{omar.MaxHP}";
         SizeF hpSize = g.MeasureString(hpText, font);
-
         Brush hpBrush = (omar.HP == omar.MaxHP) ? Brushes.DarkRed : whiteBrush;
+        g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 10);
+        g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 9);
 
-        g.DrawString(hpText, font, blackBrush, this.ClientSize.Width - hpSize.Width - 10, 10 + lineHeight);
-        g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 9 + lineHeight);
+        // Dibujar HP Regen
+        string regenText = $"HP Regen: {0}"; // Nueva estadística
+        SizeF regenSize = g.MeasureString(regenText, font);
+        g.DrawString(regenText, font, blackBrush, this.ClientSize.Width - regenSize.Width - 10, 10 + lineHeight);
+        g.DrawString(regenText, font, whiteBrush, this.ClientSize.Width - regenSize.Width - 9, 9 + lineHeight);
 
         // Dibujar daño
         string dmgText = $"Damage: {omar.damage}";
         SizeF dmgSize = g.MeasureString(dmgText, font);
-
         g.DrawString(dmgText, font, blackBrush, this.ClientSize.Width - dmgSize.Width - 10, 10 + lineHeight * 2);
         g.DrawString(dmgText, font, whiteBrush, this.ClientSize.Width - dmgSize.Width - 9, 9 + lineHeight * 2);
 
         // Dibujar velocidad de disparo
-        string shotSpeedText = $"ShotSpeed: {omar.shotSpeed}";
+        string shotSpeedText = $"Shot Speed: {omar.shotSpeed}";
         SizeF shotSpeedSize = g.MeasureString(shotSpeedText, font);
-
         g.DrawString(shotSpeedText, font, blackBrush, this.ClientSize.Width - shotSpeedSize.Width - 10, 10 + lineHeight * 3);
         g.DrawString(shotSpeedText, font, whiteBrush, this.ClientSize.Width - shotSpeedSize.Width - 9, 9 + lineHeight * 3);
+
+        // Dibujar velocidad
+        string speedText = $"Speed: {omar.Speed}";
+        SizeF speedSize = g.MeasureString(speedText, font);
+        Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
+        g.DrawString(speedText, font, blackBrush, this.ClientSize.Width - speedSize.Width - 10, 10 + lineHeight * 4);
+        g.DrawString(speedText, font, speedBrush, this.ClientSize.Width - speedSize.Width - 9, 9 + lineHeight * 4);
 
         // Dibujar rango
         string rangeText = $"Range: {omar.range}";
         SizeF rangeSize = g.MeasureString(rangeText, font);
+        g.DrawString(rangeText, font, blackBrush, this.ClientSize.Width - rangeSize.Width - 10, 10 + lineHeight * 5);
+        g.DrawString(rangeText, font, whiteBrush, this.ClientSize.Width - rangeSize.Width - 9, 9 + lineHeight * 5);
 
-
-        g.DrawString(rangeText, font, blackBrush, this.ClientSize.Width - rangeSize.Width - 10, 10 + lineHeight * 4);
-        g.DrawString(rangeText, font, whiteBrush, this.ClientSize.Width - rangeSize.Width - 9, 9 + lineHeight * 4);
     }
 
     public void DrawTimer(Graphics g, int timeLeft, int waveCount)

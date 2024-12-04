@@ -5,7 +5,8 @@ public enum GameState
     GameOver,
     Paused,
     Options,
-    Lobby
+    Lobby,
+    Win
 }
 
 public class Game
@@ -23,12 +24,9 @@ public class Game
     public PauseScreen pauseScreen;
     public GameOverScreen gameOverScreen;
     public LobbyScreen lobbyScreen;
-    private DateTime gameStartTime;
-    private TimeSpan gameDuration = TimeSpan.FromSeconds(11); // Duración del juego
-    private TimeSpan pausedDuration = TimeSpan.Zero; // Acumula el tiempo en pausa
-    private DateTime pauseStartTime; // Marca cuándo empezó la pausa
+    public WinScreen winScreen;
     private InputHandler inputHandler;
-    private int waveCount = 1;  // Contador de oleadas
+    private Wave currentWave; 
 
 
 
@@ -39,14 +37,17 @@ public class Game
         map = new Map(omar); 
         pressedKeys = new HashSet<Keys>(); 
         isFullScreen = false; 
+
         menu = new Menu();
         pauseScreen = new PauseScreen();
         gameOverScreen = new GameOverScreen();
         lobbyScreen = new LobbyScreen();
+        winScreen = new WinScreen();
         currentState = GameState.Menu;
-        gameStartTime = DateTime.Now;
 
+        currentWave = new Wave(1, TimeSpan.FromSeconds(10)); 
         inputHandler = new InputHandler(this);
+
         frame.KeyDown += new KeyEventHandler(inputHandler.OnKeyDown);
         frame.KeyUp += new KeyEventHandler(inputHandler.OnKeyUp);
         frame.KeyPreview = true;
@@ -57,72 +58,79 @@ public class Game
         gameTimer.Tick += GameTimer_Tick;   
     }
 
-    
-    public void StartGame()
-    {
-        currentState = GameState.InGame;
-        frame.BackColor = Color.Gray;
-        gameStartTime = DateTime.Now;
-        gameTimer.Start();
-        frame.Invalidate();
-        UpdateStartTime();
-    }
-
-    public void RestartGame()
-    {
-        omar = new Omar(400, 290, 40);
-        map = new Map(omar);
-        waveCount = 1;
-        StartGame();
-        inputHandler.ResetInputHandler(omar);
-    }
-
-    public void ResetGameForLobby()
-    {
-        UpdateStartTime();
-        map.ClearObjects();
-        omar.ResetPosition();
-        currentState = GameState.InGame;
-        frame.BackColor = Color.Gray;
-        gameStartTime = DateTime.Now;
-        gameTimer.Start();
-        frame.Invalidate();
-        UpdateStartTime();
-    }
-
-
-    public void ShowMenu()
+     public void ShowMenu()
     {
         currentState = GameState.Menu;
         frame.BackColor = Color.White;
         gameTimer.Stop();
         frame.Invalidate();
     }
+    
+    public void StartGame()
+    {
+        currentState = GameState.InGame;
+        frame.BackColor = Color.Gray;
+        gameTimer.Start();
+        frame.Invalidate();
+    }
+
+    public void RestartGame()
+    {
+        omar = new Omar(400, 290, 40);
+        map = new Map(omar);
+        StartGame();
+        inputHandler.ResetInputHandler(omar);
+    }
+
+    public void GoToLobby(){
+         if (currentWave.WaveNumber == 10) 
+        {
+            currentState = GameState.Win; 
+        } else {
+            currentState = GameState.Lobby;
+        }
+        gameTimer.Stop();
+        frame.Invalidate();
+    }
+    
+    public void ResetGameForLobby()
+    {
+        map.ClearObjects();
+        omar.ResetPosition();
+        currentState = GameState.InGame;
+        frame.BackColor = Color.Gray;
+        currentWave = new Wave(currentWave.WaveNumber + 1, TimeSpan.FromSeconds(10)); 
+        gameTimer.Start();
+        frame.Invalidate();
+    }
+
 
     public void PauseGame()
     {
         currentState = GameState.Paused;
         frame.BackColor = Color.White;
-        pauseStartTime = DateTime.Now; // Marca el inicio de la pausa
+        currentWave.Pause();
         gameTimer.Stop();
         frame.Invalidate();
-    }
-
-    public void GoToLobby(){
-        currentState = GameState.Lobby;
-        gameTimer.Stop();
-        frame.Invalidate();
-        waveCount++;
     }
 
     public void ResumeGame()
     {
         currentState = GameState.InGame;
         frame.BackColor = Color.Gray;
-        pausedDuration += DateTime.Now - pauseStartTime; // Suma el tiempo pausado
+        currentWave.Resume();
         gameTimer.Start();
         frame.Invalidate();
     }
+
+     public void ShowWinScreen()
+    {
+        currentState = GameState.Win;
+        frame.BackColor = Color.LightGreen;
+        gameTimer.Stop();
+        frame.Invalidate();
+    }
+
 
     private void GameTimer_Tick(object? sender, EventArgs e)
     {   
@@ -131,7 +139,7 @@ public class Game
             case GameState.InGame:
                 map.update();
                 frame.Invalidate();
-                int timeLeft = GetTimeLeft();
+                int timeLeft = currentWave.GetTimeLeft();
                 if (timeLeft == 0)
                 {
                     GoToLobby();
@@ -139,21 +147,14 @@ public class Game
                 if (omar.HP <= 0)
                 {
                     currentState = GameState.GameOver;
+                }  if (currentWave.WaveNumber == 10)
+                {
+                    ShowWinScreen();
                 }
                 break;
             case GameState.Paused:
                 break;
         }
-    }
-    private int GetTimeLeft()
-    {
-        TimeSpan elapsed = DateTime.Now - gameStartTime - pausedDuration; // Resta el tiempo en pausa
-        int timeLeft = (int)(gameDuration.TotalSeconds - elapsed.TotalSeconds);
-        return Math.Max(0, timeLeft);
-    }
-
-    private void UpdateStartTime(){
-        gameStartTime = DateTime.Now;
     }
     
 
@@ -165,7 +166,7 @@ public class Game
                 map.Draw(e.Graphics);
                 omar.Draw(e.Graphics);
                 frame.DrawStatistics(e.Graphics, omar);
-                frame.DrawTimer(e.Graphics, GetTimeLeft(),waveCount);
+                frame.DrawTimer(e.Graphics,  currentWave.GetTimeLeft(), currentWave.WaveNumber);
                 break;
             case GameState.Menu:
                 menu.Draw(e.Graphics, frame.ClientSize);
@@ -178,6 +179,9 @@ public class Game
                 break;
             case GameState.Lobby:
                 lobbyScreen.Draw(e.Graphics, frame.ClientSize);
+                break;
+            case GameState.Win:
+                winScreen.Draw(e.Graphics, frame.ClientSize);
                 break;
             }
     }
