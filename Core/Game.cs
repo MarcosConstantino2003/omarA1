@@ -28,13 +28,14 @@ public class Game
     private InputHandler inputHandler;
     private Wave currentWave;
     private const int waveTotal = 5;
+    private const int tiempoInicialWave = 10;
 
 
     public Game()
     {
         frame = new Frame();
         omar = new Omar(400, 290, 40);
-        currentWave = new Wave(1, TimeSpan.FromSeconds(10), omar);
+        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave+1), omar);
         map = new Map(omar, currentWave);
         pressedKeys = new HashSet<Keys>();
         isFullScreen = false;
@@ -69,16 +70,20 @@ public class Game
 
     public void StartGame()
     {
+        omar = new Omar(400, 290, 40);
+        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave+1), omar);
+        map = new Map(omar, currentWave);
         currentState = GameState.InGame;
         frame.BackColor = Color.Gray;
         gameTimer.Start();
         frame.Invalidate();
+        inputHandler.ResetInputHandler(omar);
     }
 
     public void RestartGame()
     {
         omar = new Omar(400, 290, 40);
-        currentWave = new Wave(1, TimeSpan.FromSeconds(10), omar);
+        currentWave = new Wave(1, omar);
         map = new Map(omar, currentWave);
         StartGame();
         inputHandler.ResetInputHandler(omar);
@@ -104,7 +109,7 @@ public class Game
         omar.ResetPosition();
         currentState = GameState.InGame;
         frame.BackColor = Color.Gray;
-        currentWave = new Wave(currentWave.WaveNumber + 1, TimeSpan.FromSeconds(10), omar);
+        currentWave = new Wave(currentWave.WaveNumber + 1, omar);
         gameTimer.Start();
         frame.Invalidate();
     }

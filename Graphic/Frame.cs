@@ -19,7 +19,31 @@ public class Frame : Form
         // El dibujo de objetos será manejado por el método FramePaint en Game
     }
 
-    
+    public void DrawTimer(Graphics g, int timeLeft, int waveCount)
+    {
+        string timerText = $"Tiempo: {timeLeft}s";
+        string waveText = $"Oleada: {waveCount}";
+
+        Font font = new Font("Arial", 24, FontStyle.Bold);
+        Brush brush = Brushes.Black;
+
+        // Medir el tamaño del texto para el temporizador
+        SizeF timerTextSize = g.MeasureString(timerText, font);
+        float x = (ClientSize.Width - timerTextSize.Width) / 2; // Centrado horizontalmente
+        float y = 10; // Posición cerca del borde superior
+
+        // Dibujar el temporizador
+        g.DrawString(timerText, font, brush, x, y);
+
+        // Cambiar el tamaño de la fuente para las oleadas
+        Font waveFont = new Font("Arial", 18, FontStyle.Bold); // Fuente más pequeña
+        SizeF waveTextSize = g.MeasureString(waveText, waveFont);
+        float waveTextY = y + timerTextSize.Height + 5; // Un poco debajo del temporizador
+
+        // Dibujar el contador de oleadas centrado
+        g.DrawString(waveText, waveFont, brush, (ClientSize.Width - waveTextSize.Width) / 2, waveTextY);
+    }
+
     public void DrawStatistics(Graphics g, Omar omar)
     {
         // Dibujar estadísticas en la parte superior derecha
@@ -71,28 +95,5 @@ public class Frame : Form
 
     }
 
-    public void DrawTimer(Graphics g, int timeLeft, int waveCount)
-{
-    string timerText = $"Tiempo: {timeLeft}s";
-    string waveText = $"Oleada: {waveCount}";
 
-    Font font = new Font("Arial", 24, FontStyle.Bold);
-    Brush brush = Brushes.Black;
-
-    // Medir el tamaño del texto para el temporizador
-    SizeF timerTextSize = g.MeasureString(timerText, font);
-    float x = (ClientSize.Width - timerTextSize.Width) / 2; // Centrado horizontalmente
-    float y = 10; // Posición cerca del borde superior
-
-    // Dibujar el temporizador
-    g.DrawString(timerText, font, brush, x, y);
-
-    // Cambiar el tamaño de la fuente para las oleadas
-    Font waveFont = new Font("Arial", 18, FontStyle.Bold); // Fuente más pequeña
-    SizeF waveTextSize = g.MeasureString(waveText, waveFont);
-    float waveTextY = y + timerTextSize.Height + 5; // Un poco debajo del temporizador
-
-    // Dibujar el contador de oleadas centrado
-    g.DrawString(waveText, waveFont, brush, (ClientSize.Width - waveTextSize.Width) / 2, waveTextY);
-    }
 }

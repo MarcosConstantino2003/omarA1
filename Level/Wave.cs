@@ -21,10 +21,18 @@ public class Wave
         this.spawner = new Spawner(omar, diamonds, enemies, hearts);
     }
 
+     public Wave(int waveNumber, Omar omar)
+        : this(waveNumber, CalculateWaveDuration(waveNumber), omar) 
+    {
+    }
     public int WaveNumber => waveNumber;
     public Spawner Spawner => spawner;
 
-
+    private static TimeSpan CalculateWaveDuration(int waveNumber)
+    {
+        int durationInSeconds = 10 + (waveNumber - 1) * 2;
+        return TimeSpan.FromSeconds(durationInSeconds);
+    }
     public void ResetStartTime()
     {
         startTime = DateTime.Now;
@@ -34,9 +42,9 @@ public class Wave
 
     public int GetTimeLeft()
     {
-        TimeSpan elapsed = DateTime.Now - startTime - pausedDuration;
-        int timeLeft = (int)(duration.TotalSeconds - elapsed.TotalSeconds);
-        return Math.Max(0, timeLeft);
+          TimeSpan elapsed = DateTime.Now - startTime - pausedDuration;
+        double timeLeft = duration.TotalSeconds - elapsed.TotalSeconds;
+        return (int)Math.Round(timeLeft);
     }
 
     public void Pause()
