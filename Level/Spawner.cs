@@ -33,17 +33,17 @@ public class Spawner
 
         // Temporizador para generar corazones cada 8 segundos
         heartTimer = new System.Windows.Forms.Timer();
-        heartTimer.Interval = 8000; // 8 segundos
+        heartTimer.Interval = 8000; 
         heartTimer.Tick += SpawnHearts;
         heartTimer.Start();
     }
 
     private void SpawnDiamonds(object? sender, EventArgs e)
     {
-        float x = random.Next(50, 750); // Posición aleatoria en X
-        float y = random.Next(50, 550); // Posición aleatoria en Y
+        float x = random.Next(50, 750); 
+        float y = random.Next(50, 550); 
 
-        // Elegir aleatoriamente el color del rombo
+
         Color diamondColor;
         int randomChoice = random.Next(0, 4); // 0 para verde, 1 para celeste, 2 para negro, 3 para morado
 
@@ -62,11 +62,10 @@ public class Spawner
                 diamondColor = Color.Purple;
                 break;
             default:
-                diamondColor = Color.Green; // Default verde
+                diamondColor = Color.Green; 
                 break;
         }
 
-        // Añadir el rombo a la lista común
         diamonds.Add(new Diamond(new PointF(x, y), diamondColor, 20));
     }
 
@@ -188,4 +187,9 @@ public class Spawner
         enemyTimer.Start();
         heartTimer.Start();
     }
+      public void StopSpawning()
+    {
+        diamondTimer.Stop();
+        enemyTimer.Stop();
+        heartTimer.Stop();    }
 }

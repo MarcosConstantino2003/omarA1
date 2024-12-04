@@ -1,42 +1,41 @@
 public class Map
 {
-    private List<Diamond> diamonds;
-    private List<Enemy> enemies;
+    public List<Diamond> diamonds;
+    public List<Enemy> enemies;
     private List<Enemy> enemiesToRemove;
-    private List<Heart> hearts;
+    public List<Heart> hearts;
     private List<Bullet> bullets;
     private List<Bullet> bulletsToRemove;
     private Random random;
-
     private Omar omar;
     private Spawner spawner;
     private CollisionHandler collisionHandler;
-
     private System.Windows.Forms.Timer shootTimer;
+    private Wave currentWave;
 
-    public Map(Omar omar)
+    public Map(Omar omar, Wave currentWave)
     {
         this.omar = omar;
-        diamonds = new List<Diamond>();
-        enemies = new List<Enemy>();
         enemiesToRemove = new List<Enemy>();
-        hearts = new List<Heart>(); 
         bullets = new List<Bullet>();
         bulletsToRemove = new List<Bullet>();
         random = new Random();
-
-        spawner = new Spawner(omar, diamonds, enemies, hearts);
+        this.currentWave = currentWave;
+        spawner = currentWave.Spawner;
+        diamonds = currentWave.diamonds;
+        enemies = currentWave.enemies;
+        hearts = currentWave.hearts;
         collisionHandler = new CollisionHandler(omar, diamonds, enemies, hearts);
         shootTimer = new System.Windows.Forms.Timer();
-        shootTimer.Interval =  omar.GetShootDelay(); 
+        shootTimer.Interval = omar.GetShootDelay();
         shootTimer.Tick += (sender, e) =>
         {
             var closestEnemy = GetClosestEnemy();
             if (closestEnemy != null)
             {
-                omar.Shoot(bullets, closestEnemy); 
+                omar.Shoot(bullets, closestEnemy);
             }
-        };        
+        };
         shootTimer.Start();
     }
 
@@ -63,7 +62,8 @@ public class Map
         return closestEnemy;
     }
 
-    public void update(){
+    public void update()
+    {
         collisionHandler.Update();
         omar.UpdatePosition();
         UpdateEnemies();
@@ -74,7 +74,7 @@ public class Map
 
     public void UpdateShootSpeed()
     {
-        shootTimer.Interval = omar.GetShootDelay(); 
+        shootTimer.Interval = omar.GetShootDelay();
     }
 
     public void UpdateEnemies()
@@ -88,26 +88,26 @@ public class Map
             }
         }
         foreach (var enemy in enemiesToRemove)
-    {
-        enemies.Remove(enemy);
-    }
+        {
+            enemies.Remove(enemy);
+        }
     }
     public void UpdateBullets()
     {
         foreach (var bullet in bullets)
         {
             bullet.Update();
-        
-        foreach (var enemy in enemies)
-        {
-            if (bullet.IsCollidingWithEnemy(enemy))
+
+            foreach (var enemy in enemies)
             {
-                enemy.TakeDamage(bullet.Damage); 
-                bulletsToRemove.Add(bullet);    
-                break;
+                if (bullet.IsCollidingWithEnemy(enemy))
+                {
+                    enemy.TakeDamage(bullet.Damage);
+                    bulletsToRemove.Add(bullet);
+                    break;
+                }
             }
         }
-    }
         foreach (var bullet in bulletsToRemove)
         {
             bullets.Remove(bullet);
@@ -117,7 +117,7 @@ public class Map
     public void UpdateDiamonds()
     {
         diamonds.RemoveAll(diamond => diamond.IsExpired());
-        hearts.RemoveAll(heart=> heart.IsExpired());
+        hearts.RemoveAll(heart => heart.IsExpired());
     }
 
     public void ClearObjects()
@@ -127,7 +127,7 @@ public class Map
         hearts.Clear();
         spawner.ResetTimers();
         bullets.Clear();
-    }   
+    }
 
     // Método para dibujar los rombos en el gráfico
     public void Draw(Graphics g)
@@ -138,10 +138,10 @@ public class Map
             diamond.Draw(g);
         }
         //enemies y spawnmarks
-        spawner.DrawSpawnMarkers(g); 
-         foreach (var enemy in enemies)
+        spawner.DrawSpawnMarkers(g);
+        foreach (var enemy in enemies)
         {
-            enemy.Draw(g); 
+            enemy.Draw(g);
         }
         //hearts
         foreach (var heart in hearts)
@@ -172,7 +172,7 @@ public class Map
 
             // Calcular posición del texto centrado sobre Omar
             PointF textPosition = new PointF(
-                omar.X  - (textSize.Width / 2), // Centrado en X
+                omar.X - (textSize.Width / 2), // Centrado en X
                 omar.Y - omar.Size // Justo encima en Y
             );
 
@@ -182,5 +182,5 @@ public class Map
             g.DrawString(floatingText, font, textBrush, textPosition);
         }
     }
-  
+
 }
