@@ -27,7 +27,7 @@ public class Game
     public WinScreen winScreen;
     private InputHandler inputHandler;
     private Wave currentWave; 
-
+    private const int waveTotal = 5;
 
 
     public Game()
@@ -83,7 +83,7 @@ public class Game
     }
 
     public void GoToLobby(){
-         if (currentWave.WaveNumber == 10) 
+         if (currentWave.WaveNumber == waveTotal) 
         {
             currentState = GameState.Win; 
         } else {
@@ -147,10 +147,7 @@ public class Game
                 if (omar.HP <= 0)
                 {
                     currentState = GameState.GameOver;
-                }  if (currentWave.WaveNumber == 10)
-                {
-                    ShowWinScreen();
-                }
+                }  
                 break;
             case GameState.Paused:
                 break;
