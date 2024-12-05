@@ -208,8 +208,8 @@ public class Omar
 
     public void ResetPosition()
     {
-        X = 400;
-        Y = 290;
+        X = 750;
+        Y = 400;
     }
 
     public void DrawTriangle(Graphics g, Enemy closestEnemy)

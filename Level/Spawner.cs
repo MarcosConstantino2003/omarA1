@@ -9,6 +9,11 @@ public class Spawner
     private List<Diamond> diamonds;
     private List<Enemy> enemies;
     private List<Heart> hearts;
+    private int playAreaLeft = 270;
+    private int playAreaRight = 1230;
+    private int playAreaTop = 45;
+    private int playAreaBottom = 805;
+
 
     public Spawner(Omar omar, List<Diamond> diamonds, List<Enemy> enemies, List<Heart> hearts)
     {
@@ -30,19 +35,19 @@ public class Spawner
         enemyTimer.Start();
 
         heartTimer = new System.Windows.Forms.Timer();
-        heartTimer.Interval = 8000; 
+        heartTimer.Interval = 8000;
         heartTimer.Tick += SpawnHearts;
         heartTimer.Start();
     }
 
     private void SpawnDiamonds(object? sender, EventArgs e)
     {
-        float x = random.Next(50, 750); 
-        float y = random.Next(50, 550); 
+        float x = random.Next(playAreaLeft, playAreaRight);
+        float y = random.Next(playAreaTop, playAreaBottom);
 
 
         Color diamondColor;
-        int randomChoice = random.Next(0, 5); 
+        int randomChoice = random.Next(0, 5);
 
         switch (randomChoice)
         {
@@ -62,7 +67,7 @@ public class Spawner
                 diamondColor = Color.Orange;
                 break;
             default:
-                diamondColor = Color.Green; 
+                diamondColor = Color.Green;
                 break;
         }
 
@@ -75,7 +80,7 @@ public class Spawner
         PointF centerPoint = GetValidSpawnPoint();
 
         spawnMarkers.Add(centerPoint);
-        await Task.Delay(400); 
+        await Task.Delay(400);
 
         for (int i = 0; i < numberOfEnemies; i++)
         {
@@ -85,7 +90,7 @@ public class Spawner
             enemies.Add(newEnemy);
 
             spawnMarkers.Remove(centerPoint);
-            await Task.Delay(200); // Tiempo entre enemigos
+            await Task.Delay(200);
         }
     }
 
@@ -95,22 +100,22 @@ public class Spawner
         PointF centerPoint;
         do
         {
-            float centerX = random.Next(100, 700);
-            float centerY = random.Next(100, 500);
+            float centerX = random.Next(playAreaLeft, playAreaRight);
+            float centerY = random.Next(playAreaTop, playAreaBottom);
             centerPoint = new PointF(centerX, centerY);
         }
-        while (IsTooCloseToOmar(centerPoint)); 
+        while (IsTooCloseToOmar(centerPoint));
         return centerPoint;
     }
 
     // Método privado para obtener un punto de spawn aleatorio alrededor del centro
     private PointF GetRandomSpawnPoint(PointF centerPoint)
     {
-        float offsetX = random.Next(-30, 31); 
+        float offsetX = random.Next(-30, 31);
         float offsetY = random.Next(-30, 31);
 
-        float x = Math.Clamp(centerPoint.X + offsetX, 50, 750);
-        float y = Math.Clamp(centerPoint.Y + offsetY, 50, 550);
+        float x = Math.Clamp(centerPoint.X + offsetX, playAreaLeft, playAreaRight);
+        float y = Math.Clamp(centerPoint.Y + offsetY, playAreaTop, playAreaBottom);
 
         return new PointF(x, y);
     }
@@ -118,17 +123,17 @@ public class Spawner
     // Método privado para obtener un tipo de enemigo aleatorio
     private Enemy GetRandomEnemyType(PointF spawnPoint)
     {
-        int enemyTypeChance = random.Next(1, 101); 
+        int enemyTypeChance = random.Next(1, 101);
 
-        if (enemyTypeChance <= 10) 
+        if (enemyTypeChance <= 10)
         {
-            return new FastEnemy(spawnPoint); 
+            return new FastEnemy(spawnPoint);
         }
-        else if (enemyTypeChance <= 25) 
+        else if (enemyTypeChance <= 25)
         {
             return new SlowEnemy(spawnPoint);
         }
-        else 
+        else
         {
             return new BasicEnemy(spawnPoint);
         }
@@ -136,20 +141,17 @@ public class Spawner
 
     private bool IsTooCloseToOmar(PointF point)
     {
-        const float minimumDistance = 100; 
-        float dx = point.X - omar.X; 
-        float dy = point.Y - omar.Y; 
+        const float minimumDistance = 100;
+        float dx = point.X - omar.X;
+        float dy = point.Y - omar.Y;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
         return distance < minimumDistance;
     }
 
     private void SpawnHearts(object? sender, EventArgs e)
     {
-        // Generar corazones en posiciones aleatorias
-        float x = random.Next(50, 750); // Posición aleatoria en el rango X
-        float y = random.Next(50, 550); // Posición aleatoria en el rango Y
-
-        // Añadir corazón a la lista
+        float x = random.Next(playAreaLeft, playAreaRight);
+        float y = random.Next(playAreaTop, playAreaBottom);
         hearts.Add(new Heart(new PointF(x, y), Color.Red, 20));
     }
 
@@ -172,24 +174,22 @@ public class Spawner
 
     public void ResetTimers()
     {
-        // Detener los timers
         diamondTimer.Stop();
         enemyTimer.Stop();
         heartTimer.Stop();
 
-        // Reiniciar los intervalos si es necesario
-        diamondTimer.Interval = 6000;  // 6 segundos
-        enemyTimer.Interval = 4000;    // 4 segundos
-        heartTimer.Interval = 8000;    // 8 segundos
+        diamondTimer.Interval = 6000;
+        enemyTimer.Interval = 4000;
+        heartTimer.Interval = 8000;
 
-        // Reiniciar el tiempo de los timers si es necesario (esto es opcional)
         diamondTimer.Start();
         enemyTimer.Start();
         heartTimer.Start();
     }
-      public void StopSpawning()
+    public void StopSpawning()
     {
         diamondTimer.Stop();
         enemyTimer.Stop();
-        heartTimer.Stop();    }
+        heartTimer.Stop();
+    }
 }

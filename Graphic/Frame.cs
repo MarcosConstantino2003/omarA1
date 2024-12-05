@@ -7,16 +7,16 @@ public class Frame : Form
     public Frame()
     {
         this.Text = "Omar's Brotato";
-        this.ClientSize = new Size(800, 600);
-        this.DoubleBuffered = true; // Para evitar parpadeos
+        this.WindowState = FormWindowState.Maximized; 
+        this.FormBorderStyle = FormBorderStyle.None;
+        this.DoubleBuffered = true; 
+        this.BackColor = Color.Black;  
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
         Graphics g = e.Graphics;
-
-        // El dibujo de objetos será manejado por el método FramePaint en Game
     }
 
     public void DrawTimer(Graphics g, int timeLeft, int waveCount)

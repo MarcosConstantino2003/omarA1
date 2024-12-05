@@ -176,6 +176,11 @@ public class InputHandler
                 game.ShowMenu();
             }
         }
+         else if (e.KeyCode == Keys.Escape)
+        {
+                game.RestartGame();
+                game.ShowMenu();
+        }
     }
 
     private void HandleLobbyControls(KeyEventArgs e)

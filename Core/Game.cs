@@ -18,8 +18,6 @@ public class Game
     private HashSet<Keys> pressedKeys;
     public Map map;
     public bool isFullScreen;
-    private const int GameWidth = 800;
-    private const int GameHeight = 600;
     public Menu menu;
     public PauseScreen pauseScreen;
     public GameOverScreen gameOverScreen;
@@ -29,16 +27,17 @@ public class Game
     private Wave currentWave;
     private const int waveTotal = 5;
     private const int tiempoInicialWave = 10;
+    private readonly Rectangle playArea = new Rectangle(250, 25, 1000, 800);
 
 
     public Game()
     {
         frame = new Frame();
-        omar = new Omar(400, 290, 40);
-        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave+1), omar);
+        omar = new Omar(700, 400, 40);
+        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave + 1), omar);
         map = new Map(omar, currentWave);
         pressedKeys = new HashSet<Keys>();
-        isFullScreen = false;
+        isFullScreen = true;
 
         menu = new Menu();
         pauseScreen = new PauseScreen();
@@ -70,11 +69,11 @@ public class Game
 
     public void StartGame()
     {
-        omar = new Omar(400, 290, 40);
-        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave+1), omar);
+        omar = new Omar(750, 400, 40);
+        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave + 1), omar);
         map = new Map(omar, currentWave);
+        frame.BackColor = Color.Black;
         currentState = GameState.InGame;
-        frame.BackColor = Color.Gray;
         gameTimer.Start();
         frame.Invalidate();
         inputHandler.ResetInputHandler(omar);
@@ -82,8 +81,6 @@ public class Game
 
     public void RestartGame()
     {
-        omar = new Omar(400, 290, 40);
-        currentWave = new Wave(1, omar);
         map = new Map(omar, currentWave);
         StartGame();
         inputHandler.ResetInputHandler(omar);
@@ -108,7 +105,7 @@ public class Game
         map.ClearObjects();
         omar.ResetPosition();
         currentState = GameState.InGame;
-        frame.BackColor = Color.Gray;
+        frame.BackColor = Color.Black;
         currentWave = new Wave(currentWave.WaveNumber + 1, omar);
         gameTimer.Start();
         frame.Invalidate();
@@ -127,8 +124,8 @@ public class Game
     public void ResumeGame()
     {
         currentState = GameState.InGame;
-        frame.BackColor = Color.Gray;
         currentWave.Resume();
+        frame.BackColor = Color.Black;
         gameTimer.Start();
         frame.Invalidate();
     }
@@ -167,9 +164,15 @@ public class Game
 
     private void FramePaint(object? sender, PaintEventArgs e)
     {
+        Graphics g = e.Graphics;
         switch (currentState)
         {
             case GameState.InGame:
+                g.FillRectangle(Brushes.Gray, playArea);
+                using (Pen borderPen = new Pen(Color.White, 5)) // Grosor de 5 píxeles
+                {
+                    g.DrawRectangle(borderPen, playArea);
+                }
                 map.Draw(e.Graphics);
                 omar.Draw(e.Graphics);
                 frame.DrawStatistics(e.Graphics, omar);
