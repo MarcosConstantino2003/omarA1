@@ -78,6 +78,11 @@ public class CollisionHandler
             omar.range += 20;
             effectText = "+20 Range";
         }
+        else if (diamond.Color == Color.Orange)
+        {
+            omar.IncreaseHPRegen(1);
+            effectText = "+1 HP Regen";
+        }
 
         // Establecer el texto flotante y su posición
         floatingText = effectText;

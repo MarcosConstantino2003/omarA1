@@ -3,42 +3,44 @@ public class Omar
     public float X { get; set; }
     public float Y { get; set; }
     public float Size { get; set; }
-    public float MaxSpeed { get; set; } 
+    public float MaxSpeed { get; set; }
     public float Speed { get; set; }
-    public float VelocityX { get; set; } 
-    public float VelocityY { get; set; } 
+    public float VelocityX { get; set; }
+    public float VelocityY { get; set; }
     public float MaxHP { get; set; }
     public float HP { get; set; }
-    public int damage {get; set;}
-    public int shotSpeed {get; set;}
-    private bool isTakingDamage; 
-    private DateTime damageStartTime; 
-    private bool isRed; 
+    public int damage { get; set; }
+    public int shotSpeed { get; set; }
+    private bool isTakingDamage;
+    public int HPRegen { get; set; }
+    private DateTime damageStartTime;
+    private bool isRed;
     private bool isInvulnerable;
     private System.Windows.Forms.Timer invulnerabilityTimer;
     public float range { get; set; }
-
-
+    private DateTime lastRegenTime;
+    private float regenInterval; 
 
     public Omar(float x, float y, float size)
     {
         X = x;
         Y = y;
         Size = size;
-        //stats iniciales
-        Speed = 4;
-        MaxSpeed = 9; 
         VelocityX = 0;
         VelocityY = 0;
+        //stats iniciales
+        Speed = 4;
+        MaxSpeed = 9;
         MaxHP = 15;
         HP = MaxHP;
         damage = 3;
         shotSpeed = 1;
-        range = 120; 
-
-        //
-        isInvulnerable = false;
-        // Inicializar el temporizador de invulnerabilidad
+        range = 120;
+        //hp regen
+        HPRegen = 0;
+        lastRegenTime = DateTime.Now;
+        regenInterval = 3.3f - 0.3f * HPRegen;
+        //iframes
         invulnerabilityTimer = new System.Windows.Forms.Timer();
         invulnerabilityTimer.Interval = 1000; // 1 segundo
         invulnerabilityTimer.Tick += (sender, e) =>
@@ -50,9 +52,9 @@ public class Omar
 
     public void MoveSmooth(float deltaX, float deltaY)
     {
-         // Calcular la longitud del vector (es decir, la distancia)
+        // Calcular la longitud del vector (es decir, la distancia)
         float magnitude = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-            
+
         // Si no estamos moviéndonos, no normalizamos
         if (magnitude != 0)
         {
@@ -72,6 +74,17 @@ public class Omar
         X += VelocityX;
         Y += VelocityY;
 
+        //Regeneración de HP
+         if (HPRegen > 0)
+        {
+            regenInterval = Math.Max(1f, 8.8f - 0.8f * HPRegen); 
+            if ((DateTime.Now - lastRegenTime).TotalSeconds >= regenInterval)
+            {
+                IncreaseHP(1); 
+                lastRegenTime = DateTime.Now; 
+            }
+        }   
+        //iframes
         if (isTakingDamage)
         {
             double elapsedSeconds = (DateTime.Now - damageStartTime).TotalSeconds;
@@ -108,16 +121,16 @@ public class Omar
         return distance < (Size / 2 + diamond.Size / 2);
     }
 
-     // Método de colisión con el enemigo
-  public bool IsCollidingWithEnemy(Enemy enemy)
+    // Método de colisión con el enemigo
+    public bool IsCollidingWithEnemy(Enemy enemy)
     {
         // Desplazar ligeramente las coordenadas de Omar hacia la derecha en la colisión
-        float offsetX = -Size/2;  // Este valor puede ser ajustado según sea necesario
+        float offsetX = -Size / 2;  // Este valor puede ser ajustado según sea necesario
 
         return (X + offsetX < enemy.Position.X + enemy.Size &&
                 X + Size + offsetX > enemy.Position.X &&
-                Y - Size/2 < enemy.Position.Y + enemy.Size &&
-                Y + Size/2> enemy.Position.Y);
+                Y - Size / 2 < enemy.Position.Y + enemy.Size &&
+                Y + Size / 2 > enemy.Position.Y);
     }
 
     // Método para verificar colisiones con los corazones
@@ -147,9 +160,9 @@ public class Omar
         }
     }
 
-     public void IncreaseSpeed(float amount)
+    public void IncreaseSpeed(float amount)
     {
-         Speed += amount;
+        Speed += amount;
         if (Speed > MaxSpeed) // Límite de velocidad
         {
             Speed = MaxSpeed;
@@ -181,9 +194,13 @@ public class Omar
 
     public void IncreaseShotSpeed(int amount)
     {
-        shotSpeed += amount; 
+        shotSpeed += amount;
     }
 
+    public void IncreaseHPRegen(int amount)
+    {
+        HPRegen += amount;
+    }
     public void IncreaseDamage(int amount)
     {
         damage += amount; // Aumentar el daño
@@ -191,13 +208,13 @@ public class Omar
 
     public void ResetPosition()
     {
-        X = 400; 
+        X = 400;
         Y = 290;
     }
 
     public void DrawTriangle(Graphics g, Enemy closestEnemy)
     {
-        if (closestEnemy == null) return; 
+        if (closestEnemy == null) return;
 
         // Calcular la dirección hacia el enemigo
         float dx = closestEnemy.Position.X - X;
@@ -210,22 +227,22 @@ public class Omar
         float directionY = dy / distance;
 
         // Definir la distancia del triángulo respecto a Omar
-        float triangleDistance = 40; 
+        float triangleDistance = 40;
 
         // Posición del vértice del triángulo (orbitando cerca de Omar)
         float triangleX = X + directionX * triangleDistance;
-        float triangleY = Y + directionY * triangleDistance - 10;  
+        float triangleY = Y + directionY * triangleDistance - 10;
 
         // Coordenadas de los tres vértices del triángulo
         PointF p1 = new PointF(triangleX, triangleY);
-        PointF p2 = new PointF(triangleX - 10, triangleY + 20); 
-        PointF p3 = new PointF(triangleX + 10, triangleY + 20); 
+        PointF p2 = new PointF(triangleX - 10, triangleY + 20);
+        PointF p3 = new PointF(triangleX + 10, triangleY + 20);
 
         // Dibujar el triángulo apuntando al enemigo más cercano con color azul oscuro
         g.FillPolygon(Brushes.DarkBlue, new PointF[] { p1, p2, p3 });
     }
 
-    
+
     public void Shoot(List<Bullet> bullets, Enemy closestEnemy)
     {
         if (closestEnemy == null) return;

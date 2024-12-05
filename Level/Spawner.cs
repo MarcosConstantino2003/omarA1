@@ -19,19 +19,16 @@ public class Spawner
         spawnMarkers = new List<PointF>();
         random = new Random();
 
-        // Temporizador para generar rombos verdes cada 6 segundos
         diamondTimer = new System.Windows.Forms.Timer();
         diamondTimer.Interval = 6000;
         diamondTimer.Tick += SpawnDiamonds;
         diamondTimer.Start();
 
-        // Temporizador para generar enemigos cada 4 segundos
         enemyTimer = new System.Windows.Forms.Timer();
         enemyTimer.Interval = 4000;
         enemyTimer.Tick += SpawnEnemies;
         enemyTimer.Start();
 
-        // Temporizador para generar corazones cada 8 segundos
         heartTimer = new System.Windows.Forms.Timer();
         heartTimer.Interval = 8000; 
         heartTimer.Tick += SpawnHearts;
@@ -45,7 +42,7 @@ public class Spawner
 
 
         Color diamondColor;
-        int randomChoice = random.Next(0, 4); // 0 para verde, 1 para celeste, 2 para negro, 3 para morado
+        int randomChoice = random.Next(0, 5); 
 
         switch (randomChoice)
         {
@@ -60,6 +57,9 @@ public class Spawner
                 break;
             case 3:
                 diamondColor = Color.Purple;
+                break;
+            case 4:
+                diamondColor = Color.Orange;
                 break;
             default:
                 diamondColor = Color.Green; 

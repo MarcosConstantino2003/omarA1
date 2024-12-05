@@ -63,7 +63,7 @@ public class Frame : Form
         g.DrawString(hpText, font, hpBrush, this.ClientSize.Width - hpSize.Width - 9, 9);
 
         // Dibujar HP Regen
-        string regenText = $"HP Regen: {0}"; // Nueva estadística
+        string regenText = $"HP Regen: {omar.HPRegen}"; // Nueva estadística
         SizeF regenSize = g.MeasureString(regenText, font);
         g.DrawString(regenText, font, blackBrush, this.ClientSize.Width - regenSize.Width - 10, 10 + lineHeight);
         g.DrawString(regenText, font, whiteBrush, this.ClientSize.Width - regenSize.Width - 9, 9 + lineHeight);
