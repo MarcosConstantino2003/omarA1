@@ -7,10 +7,10 @@ public class Frame : Form
     public Frame()
     {
         this.Text = "Omar's Brotato";
-        this.WindowState = FormWindowState.Maximized; 
+        this.WindowState = FormWindowState.Maximized;
         this.FormBorderStyle = FormBorderStyle.None;
-        this.DoubleBuffered = true; 
-        this.BackColor = Color.Black;  
+        this.DoubleBuffered = true;
+        this.BackColor = Color.Black;
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -26,13 +26,20 @@ public class Frame : Form
 
         Font font = new Font("Arial", 24, FontStyle.Bold);
         Brush brush = Brushes.Black;
+        Brush borderBrush = Brushes.White; // Borde blanco
 
         // Medir el tamaño del texto para el temporizador
         SizeF timerTextSize = g.MeasureString(timerText, font);
         float x = (ClientSize.Width - timerTextSize.Width) / 2; // Centrado horizontalmente
         float y = 10; // Posición cerca del borde superior
 
-        // Dibujar el temporizador
+        // Dibujar el borde blanco primero (con un pequeño desplazamiento)
+        g.DrawString(timerText, font, borderBrush, x + 2, y + 2);  // Desplazamiento para borde
+        g.DrawString(timerText, font, borderBrush, x - 2, y + 2);  // Desplazamiento para borde
+        g.DrawString(timerText, font, borderBrush, x + 2, y - 2);  // Desplazamiento para borde
+        g.DrawString(timerText, font, borderBrush, x - 2, y - 2);  // Desplazamiento para borde
+
+        // Dibujar el texto original (negro)
         g.DrawString(timerText, font, brush, x, y);
 
         // Cambiar el tamaño de la fuente para las oleadas
@@ -40,9 +47,17 @@ public class Frame : Form
         SizeF waveTextSize = g.MeasureString(waveText, waveFont);
         float waveTextY = y + timerTextSize.Height + 5; // Un poco debajo del temporizador
 
-        // Dibujar el contador de oleadas centrado
+        // Dibujar el borde blanco primero (con un pequeño desplazamiento)
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 + 2, waveTextY + 2);  // Desplazamiento para borde
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 - 2, waveTextY + 2);  // Desplazamiento para borde
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 + 2, waveTextY - 2);  // Desplazamiento para borde
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 - 2, waveTextY - 2);  // Desplazamiento para borde
+
+        // Dibujar el texto original (negro)
         g.DrawString(waveText, waveFont, brush, (ClientSize.Width - waveTextSize.Width) / 2, waveTextY);
     }
+
+
 
     public void DrawStatistics(Graphics g, Omar omar)
     {

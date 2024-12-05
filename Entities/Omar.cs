@@ -19,7 +19,11 @@ public class Omar
     private System.Windows.Forms.Timer invulnerabilityTimer;
     public float range { get; set; }
     private DateTime lastRegenTime;
-    private float regenInterval; 
+    private float regenInterval;
+    private int playAreaLeft = 270;
+    private int playAreaRight = 1230;
+    private int playAreaTop = 45;
+    private int playAreaBottom = 805;
 
     public Omar(float x, float y, float size)
     {
@@ -42,54 +46,50 @@ public class Omar
         regenInterval = 3.3f - 0.3f * HPRegen;
         //iframes
         invulnerabilityTimer = new System.Windows.Forms.Timer();
-        invulnerabilityTimer.Interval = 1000; // 1 segundo
+        invulnerabilityTimer.Interval = 1000; 
         invulnerabilityTimer.Tick += (sender, e) =>
         {
-            isInvulnerable = false; // Desactivar invulnerabilidad
-            invulnerabilityTimer.Stop(); // Detener el temporizador
+            isInvulnerable = false; 
+            invulnerabilityTimer.Stop(); 
         };
     }
 
     public void MoveSmooth(float deltaX, float deltaY)
     {
-        // Calcular la longitud del vector (es decir, la distancia)
         float magnitude = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-
         // Si no estamos moviéndonos, no normalizamos
         if (magnitude != 0)
         {
-            // Normalizamos el vector de dirección para que la velocidad sea constante en todas direcciones
             deltaX = deltaX / magnitude;
             deltaY = deltaY / magnitude;
         }
 
-        // Multiplicamos por la velocidad deseada
         VelocityX = deltaX * Speed;
         VelocityY = deltaY * Speed;
     }
 
-    // Actualizamos la posición basándonos en la velocidad (para movimiento suave)
     public void UpdatePosition()
     {
         X += VelocityX;
         Y += VelocityY;
 
+        X = Math.Clamp(X, playAreaLeft, playAreaRight);
+        Y = Math.Clamp(Y, playAreaTop, playAreaBottom);
+
         //Regeneración de HP
-         if (HPRegen > 0)
+        if (HPRegen > 0)
         {
-            regenInterval = Math.Max(1f, 8.8f - 0.8f * HPRegen); 
+            regenInterval = Math.Max(1f, 8.8f - 0.8f * HPRegen);
             if ((DateTime.Now - lastRegenTime).TotalSeconds >= regenInterval)
             {
-                IncreaseHP(1); 
-                lastRegenTime = DateTime.Now; 
+                IncreaseHP(1);
+                lastRegenTime = DateTime.Now;
             }
-        }   
+        }
         //iframes
         if (isTakingDamage)
         {
             double elapsedSeconds = (DateTime.Now - damageStartTime).TotalSeconds;
-
-            // Alternar color cada 100 ms
             if ((int)(elapsedSeconds * 10) % 2 == 0)
             {
                 isRed = true;
@@ -99,33 +99,26 @@ public class Omar
                 isRed = false;
             }
 
-            // Salir del estado de "daño" después de 1 segundo
             if (elapsedSeconds > 0.5)
             {
                 isTakingDamage = false;
-                isRed = false; // Asegurarse de volver al estado blanco
+                isRed = false;
             }
         }
     }
 
-
-    // Método para verificar la colisión con un rombo
     public bool IsCollidingWithDiamond(Diamond diamond)
     {
-        // Calculamos la distancia entre el centro de Omar y el centro del rombo
         float dx = X - diamond.Position.X;
         float dy = Y - diamond.Position.Y;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
 
-        // Si la distancia es menor que la suma de los radios (considerando el tamaño del rombo y de Omar)
         return distance < (Size / 2 + diamond.Size / 2);
     }
 
-    // Método de colisión con el enemigo
     public bool IsCollidingWithEnemy(Enemy enemy)
     {
-        // Desplazar ligeramente las coordenadas de Omar hacia la derecha en la colisión
-        float offsetX = -Size / 2;  // Este valor puede ser ajustado según sea necesario
+        float offsetX = -Size / 2; 
 
         return (X + offsetX < enemy.Position.X + enemy.Size &&
                 X + Size + offsetX > enemy.Position.X &&
@@ -133,10 +126,8 @@ public class Omar
                 Y + Size / 2 > enemy.Position.Y);
     }
 
-    // Método para verificar colisiones con los corazones
     public bool IsCollidingWithHeart(Heart heart)
     {
-        // Verificar si las posiciones de Omar y el corazón se superponen
         return (X < heart.Position.X + heart.Size &&
                 X + Size > heart.Position.X &&
                 Y < heart.Position.Y + heart.Size &&
@@ -145,16 +136,14 @@ public class Omar
 
     public int GetShootDelay()
     {
-        // El delay base es de 500ms y se reduce 30ms por cada unidad de shotSpeed, con un mínimo de 100ms
         int calculatedDelay = 500 - (int)(shotSpeed * 30);
         return Math.Max(calculatedDelay, 100); // Limitar el delay a 100ms como mínimo
     }
 
-    // Método para aumentar los HP de Omar
     public void IncreaseHP(int amount)
     {
         HP += amount;
-        if (HP > MaxHP) // Asegurar que no supere el max HP
+        if (HP > MaxHP) 
         {
             HP = MaxHP;
         }
@@ -163,7 +152,7 @@ public class Omar
     public void IncreaseSpeed(float amount)
     {
         Speed += amount;
-        if (Speed > MaxSpeed) // Límite de velocidad
+        if (Speed > MaxSpeed) 
         {
             Speed = MaxSpeed;
         }
@@ -172,7 +161,7 @@ public class Omar
     public void DecreaseSpeed(float amount)
     {
         Speed -= amount;
-        if (Speed < 0) // Límite mínimo de velocidad
+        if (Speed < 0) 
         {
             Speed = 0;
         }
@@ -180,7 +169,7 @@ public class Omar
 
     public void DecreaseHP(float amount)
     {
-        if (!isInvulnerable) // Solo perder HP si no es invulnerable
+        if (!isInvulnerable) 
         {
             HP -= amount;
             if (HP < 0) HP = 0;
@@ -203,7 +192,7 @@ public class Omar
     }
     public void IncreaseDamage(int amount)
     {
-        damage += amount; // Aumentar el daño
+        damage += amount; 
     }
 
     public void ResetPosition()
@@ -221,15 +210,11 @@ public class Omar
         float dy = closestEnemy.Position.Y - Y;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
 
-
-        // Normalizamos el vector dirección (hacia el enemigo)
         float directionX = dx / distance;
         float directionY = dy / distance;
-
-        // Definir la distancia del triángulo respecto a Omar
         float triangleDistance = 40;
 
-        // Posición del vértice del triángulo (orbitando cerca de Omar)
+
         float triangleX = X + directionX * triangleDistance;
         float triangleY = Y + directionY * triangleDistance - 10;
 

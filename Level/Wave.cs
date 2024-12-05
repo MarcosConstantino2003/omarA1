@@ -30,7 +30,7 @@ public class Wave
 
     private static TimeSpan CalculateWaveDuration(int waveNumber)
     {
-        int durationInSeconds = 10 + (waveNumber - 1) * 2;
+        int durationInSeconds = 10 + (waveNumber - 1) * 5;
         return TimeSpan.FromSeconds(durationInSeconds);
     }
     public void ResetStartTime()
