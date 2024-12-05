@@ -197,7 +197,7 @@ public class Omar
 
     public void ResetPosition()
     {
-        X = 750;
+        X = 770;
         Y = 400;
     }
 

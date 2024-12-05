@@ -1,9 +1,12 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Drawing.Text;
 
 public class Frame : Form
 {
+    private PrivateFontCollection fontCollection;
+
     public Frame()
     {
         this.Text = "Omar's Brotato";
@@ -11,6 +14,9 @@ public class Frame : Form
         this.FormBorderStyle = FormBorderStyle.None;
         this.DoubleBuffered = true;
         this.BackColor = Color.Black;
+        fontCollection = new PrivateFontCollection();
+        fontCollection.AddFontFile("font\\chewypro.otf");
+
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -24,34 +30,34 @@ public class Frame : Form
         string timerText = $"Tiempo: {timeLeft}s";
         string waveText = $"Oleada: {waveCount}";
 
-        Font font = new Font("Arial", 24, FontStyle.Bold);
+        Font font = new Font(fontCollection.Families[0], 24, FontStyle.Bold);
         Brush brush = Brushes.Black;
-        Brush borderBrush = Brushes.White; // Borde blanco
+        Brush borderBrush = Brushes.White; 
 
         // Medir el tamaño del texto para el temporizador
         SizeF timerTextSize = g.MeasureString(timerText, font);
-        float x = (ClientSize.Width - timerTextSize.Width) / 2; // Centrado horizontalmente
-        float y = 10; // Posición cerca del borde superior
+        float x = (ClientSize.Width - timerTextSize.Width) / 2; 
+        float y = 10; 
 
         // Dibujar el borde blanco primero (con un pequeño desplazamiento)
-        g.DrawString(timerText, font, borderBrush, x + 2, y + 2);  // Desplazamiento para borde
-        g.DrawString(timerText, font, borderBrush, x - 2, y + 2);  // Desplazamiento para borde
-        g.DrawString(timerText, font, borderBrush, x + 2, y - 2);  // Desplazamiento para borde
-        g.DrawString(timerText, font, borderBrush, x - 2, y - 2);  // Desplazamiento para borde
+        g.DrawString(timerText, font, borderBrush, x + 2, y + 2);  
+        g.DrawString(timerText, font, borderBrush, x - 2, y + 2);  
+        g.DrawString(timerText, font, borderBrush, x + 2, y - 2);  
+        g.DrawString(timerText, font, borderBrush, x - 2, y - 2);  
 
         // Dibujar el texto original (negro)
         g.DrawString(timerText, font, brush, x, y);
 
         // Cambiar el tamaño de la fuente para las oleadas
-        Font waveFont = new Font("Arial", 18, FontStyle.Bold); // Fuente más pequeña
+        Font waveFont = new Font(fontCollection.Families[0], 18, FontStyle.Bold);
         SizeF waveTextSize = g.MeasureString(waveText, waveFont);
         float waveTextY = y + timerTextSize.Height + 5; // Un poco debajo del temporizador
 
         // Dibujar el borde blanco primero (con un pequeño desplazamiento)
-        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 + 2, waveTextY + 2);  // Desplazamiento para borde
-        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 - 2, waveTextY + 2);  // Desplazamiento para borde
-        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 + 2, waveTextY - 2);  // Desplazamiento para borde
-        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 - 2, waveTextY - 2);  // Desplazamiento para borde
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 + 2, waveTextY + 2);  
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 - 2, waveTextY + 2);  
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 + 2, waveTextY - 2);  
+        g.DrawString(waveText, waveFont, borderBrush, (ClientSize.Width - waveTextSize.Width) / 2 - 2, waveTextY - 2);  
 
         // Dibujar el texto original (negro)
         g.DrawString(waveText, waveFont, brush, (ClientSize.Width - waveTextSize.Width) / 2, waveTextY);
@@ -62,10 +68,9 @@ public class Frame : Form
     public void DrawStatistics(Graphics g, Omar omar)
     {
         // Dibujar estadísticas en la parte superior derecha
-        Font font = new Font("Arial", 14, FontStyle.Bold);
+        Font font = new Font(fontCollection.Families[0], 16, FontStyle.Bold);
         Brush whiteBrush = Brushes.White;
         Brush blackBrush = Brushes.Black;
-        Pen blackPen = new Pen(Color.Black, 2);
 
         // Espaciado entre líneas
         int lineHeight = 20;

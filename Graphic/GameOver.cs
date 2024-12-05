@@ -1,8 +1,9 @@
 using System;
 using System.Drawing;
-
+using System.Drawing.Text;
 public class GameOverScreen
 {
+    private PrivateFontCollection? fontCollection;
     private string[] options = { "Reintentar", "Menu Principal" };
     private int selectedOption = 0;
 
@@ -24,11 +25,12 @@ public class GameOverScreen
     public void Draw(Graphics g, Size clientSize)
     {
         string title = "GAME OVER";
-        Font titleFont = new Font("Arial", 36, FontStyle.Bold);
-        Font optionsFont = new Font("Arial", 24, FontStyle.Regular);
-
+        fontCollection = new PrivateFontCollection();
+        fontCollection.AddFontFile("font\\chewypro.otf"); 
+        Font titleFont = new Font(fontCollection.Families[0], 36, FontStyle.Bold);
+        Font optionsFont = new Font(fontCollection.Families[0], 24, FontStyle.Regular);
         Brush titleBrush = Brushes.Red;
-        Brush optionsBrush = Brushes.Black;
+        Brush optionsBrush = Brushes.White;
         Brush selectedBrush = Brushes.DarkRed;
 
         // Dibujar el título centrado

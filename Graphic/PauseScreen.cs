@@ -1,8 +1,11 @@
 using System;
 using System.Drawing;
+using System.Drawing.Text;
 
 public class PauseScreen
 {
+    private PrivateFontCollection? fontCollection;
+
     private string[] options = { "Continuar", "Menu Principal" };
     private int selectedOption = 0;
 
@@ -23,18 +26,26 @@ public class PauseScreen
 
     public void Draw(Graphics g, Size clientSize)
     {
+        Color semiTransparentBlack = Color.FromArgb(100, 0, 0, 0); // Alpha = 100 for low opacity
+        using (Brush backgroundBrush = new SolidBrush(semiTransparentBlack))
+        {
+            g.FillRectangle(backgroundBrush, 0, 0, clientSize.Width, clientSize.Height);  
+        }
+
+        fontCollection = new PrivateFontCollection();
+        fontCollection.AddFontFile("font\\chewypro.otf");
+        Font optionsFont = new Font(fontCollection.Families[0], 24, FontStyle.Bold);
+        Font titleFont = new Font(fontCollection.Families[0], 48, FontStyle.Bold);
         string title = "PAUSA";
-        Font titleFont = new Font("Arial", 36, FontStyle.Bold);
-        Font optionsFont = new Font("Arial", 24, FontStyle.Regular);
 
         Brush titleBrush = Brushes.Black;
         Brush optionsBrush = Brushes.Black;
-        Brush selectedBrush = Brushes.DarkBlue;
+        Brush selectedBrush = Brushes.LightBlue;
 
         // Dibujar el título centrado
         SizeF titleSize = g.MeasureString(title, titleFont);
         float titleX = (clientSize.Width - titleSize.Width) / 2;
-        float titleY = clientSize.Height / 4;
+        float titleY = clientSize.Height / 3;
         g.DrawString(title, titleFont, titleBrush, titleX, titleY);
 
         // Dibujar las opciones
@@ -52,3 +63,4 @@ public class PauseScreen
         }
     }
 }
+

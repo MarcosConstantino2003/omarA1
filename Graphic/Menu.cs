@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Drawing.Text;
 
 public class Menu
 {
@@ -7,28 +8,33 @@ public class Menu
     private Font font;
     private Brush normalBrush;
     private Brush selectedBrush;
-    private Font titleFont;
+    private Image logoImage; // Para cargar la imagen del logo
 
+    private float logoMaxWidth = 600f;
+    private float logoMaxHeight = 200f; 
+    private PrivateFontCollection fontCollection;
     public Menu()
     {
-        // Inicializar las opciones del menú
         options = new string[] { "Jugar", "Opciones", "Salir" };
-        selectedIndex = 0; // Seleccionar la primera opción por defecto
-        font = new Font("Arial", 24, FontStyle.Bold);
-        normalBrush = Brushes.Black; // Color normal
-        selectedBrush = Brushes.Red; // Color de la opción seleccionada
-        titleFont = new Font("Comic Sans MS", 72, FontStyle.Bold); // Fuente más grande para el título
+        selectedIndex = 0; 
+        normalBrush = Brushes.Black; 
+        selectedBrush = Brushes.Red; 
+        logoImage = Image.FromFile("img/mainlogo.png");
+        fontCollection = new PrivateFontCollection();
+        fontCollection.AddFontFile("font\\chewypro.otf"); 
+        font = new Font(fontCollection.Families[0], 32, FontStyle.Bold);
     }
 
     public void Draw(Graphics g, Size clientSize)
     {
-        // Dibujar el título en la parte superior
-        string title = "OMARTATO";
-        SizeF titleSize = g.MeasureString(title, titleFont);
-        float titleX = (clientSize.Width - titleSize.Width) / 2;
-        float titleY = clientSize.Height / 5; // Distancia desde el borde superior para el título
+        float ratio = Math.Min(logoMaxWidth / logoImage.Width, logoMaxHeight / logoImage.Height);
+        int newWidth = (int)(logoImage.Width * ratio);
+        int newHeight = (int)(logoImage.Height * ratio);
 
-        g.DrawString(title, titleFont, Brushes.Black, titleX, titleY);
+        float logoX = (clientSize.Width - newWidth) / 2; // Centrado horizontal
+        float logoY = clientSize.Height / 5; // Distancia desde el borde superior
+
+        g.DrawImage(logoImage, logoX, logoY, newWidth, newHeight);
 
         // Dibujar las opciones del menú
         for (int i = 0; i < options.Length; i++)
@@ -39,7 +45,7 @@ public class Menu
             // Calcular la posición centrada para las opciones
             SizeF textSize = g.MeasureString(text, font);
             float x = (clientSize.Width - textSize.Width) / 2;
-            float y = (clientSize.Height / 2 - (options.Length * textSize.Height) / 2) + i * (textSize.Height + 10);
+            float y = (clientSize.Height - clientSize.Height/3 ) + i * (textSize.Height + 10);
 
             // Dibujar cada opción
             g.DrawString(text, font, brush, x, y);

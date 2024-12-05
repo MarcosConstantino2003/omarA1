@@ -25,6 +25,10 @@ public class InputHandler
         {
             ToggleFullScreen();
         }
+         if (e.KeyCode == Keys.Q)
+        {
+            Application.Exit();
+        }
 
         if (!pressedKeys.Contains(e.KeyCode))
         {
@@ -120,7 +124,7 @@ public class InputHandler
         }
         else if (e.KeyCode == Keys.Escape)
         {
-            Application.Exit();  
+            Application.Exit();
         }
     }
 
@@ -176,10 +180,10 @@ public class InputHandler
                 game.ShowMenu();
             }
         }
-         else if (e.KeyCode == Keys.Escape)
+        else if (e.KeyCode == Keys.Escape)
         {
-                game.RestartGame();
-                game.ShowMenu();
+            game.ResumeGame();
+
         }
     }
 
@@ -195,7 +199,7 @@ public class InputHandler
     {
         if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
         {
-            game.ShowMenu(); 
+            game.ShowMenu();
         }
     }
 
@@ -205,7 +209,7 @@ public class InputHandler
         {
             game.frame.FormBorderStyle = FormBorderStyle.Sizable;
             game.frame.WindowState = FormWindowState.Normal;
-            game.frame.Size = new Size(800, 600); 
+            game.frame.Size = new Size(800, 600);
             game.isFullScreen = false;
         }
         else
@@ -218,7 +222,7 @@ public class InputHandler
 
     public void ResetInputHandler(Omar newOmar)
     {
-        omar = newOmar; 
-        pressedKeys.Clear(); 
+        omar = newOmar;
+        pressedKeys.Clear();
     }
 }

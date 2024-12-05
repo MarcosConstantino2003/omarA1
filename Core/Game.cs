@@ -27,13 +27,13 @@ public class Game
     private Wave currentWave;
     private const int waveTotal = 5;
     private const int tiempoInicialWave = 20;
-    private readonly Rectangle playArea = new Rectangle(250, 25, 1000, 800);
+    private readonly Rectangle playArea = new Rectangle(270, 25, 1000, 800);
 
 
     public Game()
     {
         frame = new Frame();
-        omar = new Omar(700, 400, 40);
+        omar = new Omar(770, 400, 40);
         currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave + 1), omar);
         map = new Map(omar, currentWave);
         pressedKeys = new HashSet<Keys>();
@@ -69,7 +69,7 @@ public class Game
 
     public void StartGame()
     {
-        omar = new Omar(750, 400, 40);
+        omar = new Omar(770, 400, 40);
         currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave + 1), omar);
         map = new Map(omar, currentWave);
         frame.BackColor = Color.Black;
@@ -96,16 +96,16 @@ public class Game
         {
             currentState = GameState.Lobby;
         }
+        map.ClearObjects();
+        omar.ResetPosition();
         gameTimer.Stop();
         frame.Invalidate();
     }
 
     public void ResetGameForLobby()
     {
-        map.ClearObjects();
-        omar.ResetPosition();
+        
         currentState = GameState.InGame;
-        frame.BackColor = Color.Black;
         currentWave = new Wave(currentWave.WaveNumber + 1, omar);
         gameTimer.Start();
         frame.Invalidate();
@@ -115,7 +115,7 @@ public class Game
     public void PauseGame()
     {
         currentState = GameState.Paused;
-        frame.BackColor = Color.White;
+
         currentWave.Pause();
         gameTimer.Stop();
         frame.Invalidate();
@@ -182,12 +182,26 @@ public class Game
                 menu.Draw(e.Graphics, frame.ClientSize);
                 break;
             case GameState.Paused:
+                g.FillRectangle(Brushes.Gray, playArea);
+                using (Pen borderPen = new Pen(Color.White, 5)) // Grosor de 5 píxeles
+                {
+                    g.DrawRectangle(borderPen, playArea);
+                }
+                map.Draw(e.Graphics);
+                omar.Draw(e.Graphics);
                 pauseScreen.Draw(e.Graphics, frame.ClientSize);
                 break;
             case GameState.GameOver:
                 gameOverScreen.Draw(e.Graphics, frame.ClientSize);
                 break;
             case GameState.Lobby:
+                g.FillRectangle(Brushes.Gray, playArea);
+                using (Pen borderPen = new Pen(Color.White, 5)) // Grosor de 5 píxeles
+                {
+                    g.DrawRectangle(borderPen, playArea);
+                }
+                map.Draw(e.Graphics);
+                omar.Draw(e.Graphics);
                 lobbyScreen.Draw(e.Graphics, frame.ClientSize);
                 break;
             case GameState.Win:

@@ -1,15 +1,24 @@
 using System.Drawing;
+using System.Drawing.Text;
 
 public class LobbyScreen
 {
+    private PrivateFontCollection? fontCollection;
+
     public void Draw(Graphics g, Size clientSize)
     {
         // Fondo
-        g.Clear(Color.LightBlue);
+        Color semiTransparentBlack = Color.FromArgb(100, 0, 0, 0); // Alpha = 100 for low opacity
+        using (Brush backgroundBrush = new SolidBrush(semiTransparentBlack))
+        {
+            g.FillRectangle(backgroundBrush, 0, 0, clientSize.Width, clientSize.Height);  
+        }
 
         // Texto principal
         string message = "¡Lobby nashe!";
-        Font font = new Font("Arial", 36, FontStyle.Bold);
+        fontCollection = new PrivateFontCollection();
+        fontCollection.AddFontFile("font\\chewypro.otf"); 
+        Font font = new Font(fontCollection.Families[0], 32, FontStyle.Bold);
         Brush brush = Brushes.Black;
 
         SizeF messageSize = g.MeasureString(message, font);
@@ -20,7 +29,7 @@ public class LobbyScreen
 
         // Botón de continuar
         string buttonText = "Continuar";
-        Font buttonFont = new Font("Arial", 24, FontStyle.Regular);
+        Font buttonFont = new Font(fontCollection.Families[0], 24, FontStyle.Regular);
         Brush buttonBrush = Brushes.White;
         Brush buttonBackground = Brushes.Black;
 
