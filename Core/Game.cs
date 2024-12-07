@@ -34,7 +34,7 @@ public class Game
     {
         frame = new Frame();
         omar = new Omar(770, 400, 40);
-        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave + 1), omar);
+        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave), omar);
         map = new Map(omar, currentWave);
         pressedKeys = new HashSet<Keys>();
         isFullScreen = true;
@@ -70,7 +70,7 @@ public class Game
     public void StartGame()
     {
         omar = new Omar(770, 400, 40);
-        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave + 1), omar);
+        currentWave = new Wave(1, TimeSpan.FromSeconds(tiempoInicialWave), omar);
         map = new Map(omar, currentWave);
         frame.BackColor = Color.Black;
         currentState = GameState.InGame;

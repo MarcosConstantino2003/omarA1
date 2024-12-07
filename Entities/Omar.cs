@@ -46,11 +46,11 @@ public class Omar
         regenInterval = 3.3f - 0.3f * HPRegen;
         //iframes
         invulnerabilityTimer = new System.Windows.Forms.Timer();
-        invulnerabilityTimer.Interval = 1000; 
+        invulnerabilityTimer.Interval = 1000;
         invulnerabilityTimer.Tick += (sender, e) =>
         {
-            isInvulnerable = false; 
-            invulnerabilityTimer.Stop(); 
+            isInvulnerable = false;
+            invulnerabilityTimer.Stop();
         };
     }
 
@@ -109,16 +109,26 @@ public class Omar
 
     public bool IsCollidingWithDiamond(Diamond diamond)
     {
-        float dx = X - diamond.Position.X;
-        float dy = Y - diamond.Position.Y;
+        // Desplazamientos para ajustar la hitbox del diamante
+        float offsetX = diamond.Size * 0.5f; // Ajustar hacia la derecha (10% del tamaño del diamante)
+        float offsetY = diamond.Size * 0.5f; // Ajustar hacia abajo (10% del tamaño del diamante)
+
+        // Coordenadas ajustadas del diamante
+        float adjustedDiamondX = diamond.Position.X + offsetX;
+        float adjustedDiamondY = diamond.Position.Y + offsetY;
+
+        // Calcular la distancia entre Omar y el centro ajustado del diamante
+        float dx = X - adjustedDiamondX;
+        float dy = Y - adjustedDiamondY;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
 
+        // Verificar colisión usando las hitboxes ajustadas
         return distance < (Size / 2 + diamond.Size / 2);
     }
 
     public bool IsCollidingWithEnemy(Enemy enemy)
     {
-        float offsetX = -Size / 2; 
+        float offsetX = -Size / 2;
 
         return (X + offsetX < enemy.Position.X + enemy.Size &&
                 X + Size + offsetX > enemy.Position.X &&
@@ -128,10 +138,19 @@ public class Omar
 
     public bool IsCollidingWithHeart(Heart heart)
     {
-        return (X < heart.Position.X + heart.Size &&
-                X + Size > heart.Position.X &&
-                Y < heart.Position.Y + heart.Size &&
-                Y + Size > heart.Position.Y);
+        // Desplazamientos para ajustar la hitbox del corazón
+        float offsetX = heart.Size; // Ajustar hacia la derecha (10% del tamaño del corazón)
+        float offsetY = heart.Size; // Ajustar hacia abajo (10% del tamaño del corazón)
+
+        // Coordenadas ajustadas del corazón
+        float adjustedHeartX = heart.Position.X + offsetX;
+        float adjustedHeartY = heart.Position.Y + offsetY;
+
+        // Verificar colisión usando las hitboxes ajustadas
+        return (X < adjustedHeartX + heart.Size &&
+                X + Size > adjustedHeartX &&
+                Y < adjustedHeartY + heart.Size &&
+                Y + Size > adjustedHeartY);
     }
 
     public int GetShootDelay()
@@ -143,15 +162,15 @@ public class Omar
     public void IncreaseHP(int amount)
     {
         HP += amount;
-        if (HP > MaxHP) 
+        if (HP > MaxHP)
         {
             HP = MaxHP;
         }
     }
 
-     public void DecreaseHP(float amount)
+    public void DecreaseHP(float amount)
     {
-        if (!isInvulnerable) 
+        if (!isInvulnerable)
         {
             HP -= amount;
             if (HP < 0) HP = 0;
@@ -166,7 +185,7 @@ public class Omar
     public void IncreaseSpeed(float amount)
     {
         Speed += amount;
-        if (Speed > MaxSpeed) 
+        if (Speed > MaxSpeed)
         {
             Speed = MaxSpeed;
         }
@@ -175,12 +194,12 @@ public class Omar
     public void DecreaseSpeed(float amount)
     {
         Speed -= amount;
-        if (Speed < 0) 
+        if (Speed < 0)
         {
             Speed = 0;
         }
     }
-   
+
 
     public void IncreaseShotSpeed(int amount)
     {
@@ -193,7 +212,7 @@ public class Omar
     }
     public void IncreaseDamage(int amount)
     {
-        damage += amount; 
+        damage += amount;
     }
 
     public void IncreaseMaxHP(int amount)

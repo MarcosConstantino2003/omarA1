@@ -13,6 +13,9 @@ public class Spawner
     private int playAreaRight = 1230;
     private int playAreaTop = 45;
     private int playAreaBottom = 805;
+    private int diamondRate = 6000;
+    private int enemyRate = 4000;
+    private int heartRate = 2000;
 
 
     public Spawner(Omar omar, List<Diamond> diamonds, List<Enemy> enemies, List<Heart> hearts)
@@ -25,17 +28,17 @@ public class Spawner
         random = new Random();
 
         diamondTimer = new System.Windows.Forms.Timer();
-        diamondTimer.Interval = 6000;
+        diamondTimer.Interval = diamondRate;
         diamondTimer.Tick += SpawnDiamonds;
         diamondTimer.Start();
 
         enemyTimer = new System.Windows.Forms.Timer();
-        enemyTimer.Interval = 4000;
+        enemyTimer.Interval = enemyRate;
         enemyTimer.Tick += SpawnEnemies;
         enemyTimer.Start();
 
         heartTimer = new System.Windows.Forms.Timer();
-        heartTimer.Interval = 8000;
+        heartTimer.Interval = heartRate;
         heartTimer.Tick += SpawnHearts;
         heartTimer.Start();
     }
@@ -178,9 +181,9 @@ public class Spawner
         enemyTimer.Stop();
         heartTimer.Stop();
 
-        diamondTimer.Interval = 6000;
-        enemyTimer.Interval = 4000;
-        heartTimer.Interval = 8000;
+        diamondTimer.Interval = diamondRate;
+        enemyTimer.Interval = enemyRate;
+        heartTimer.Interval = heartRate;
 
         diamondTimer.Start();
         enemyTimer.Start();
