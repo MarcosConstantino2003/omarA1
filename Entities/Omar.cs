@@ -278,13 +278,30 @@ public class Omar
 
     public void Draw(Graphics g)
     {
-        Brush brush = isTakingDamage ? (isRed ? Brushes.DarkRed : Brushes.White) : Brushes.White;
-        Pen blackPen = new Pen(Color.Black, 2);
-        g.FillEllipse(brush, X - Size / 2, Y - Size / 2, Size, Size);
-        g.DrawEllipse(blackPen, X - Size / 2, Y - Size / 2, Size, Size);
+        // Cargar la imagen de Omar
+        Image omarImage = Image.FromFile("img\\omar.webp");
+
+        // Verificar si Omar está tomando daño y decidir el color
+        bool drawRedOverlay = isTakingDamage && isRed;
+
+        // Dibujar la imagen centrada en las coordenadas de Omar
+        float imageX = X - Size / 2; // Centrar horizontalmente
+        float imageY = Y - Size / 2; // Centrar verticalmente
+        g.DrawImage(omarImage, imageX, imageY, Size, Size);
+
+        // Si está en rojo, dibujar un rectángulo semi-transparente encima de la imagen
+        if (drawRedOverlay)
+            if (drawRedOverlay)
+            {
+                using (Brush redBrush = new SolidBrush(Color.FromArgb(120, Color.Red))) // Semitransparente
+                {
+                    g.FillEllipse(redBrush, imageX, imageY, Size-2, Size-2);
+                }
+            }
 
         // Dibujar el rango de disparo
         Pen rangePen = new Pen(Color.LightBlue, 1);
         g.DrawEllipse(rangePen, X - range, Y - range, range * 2, range * 2);
     }
+
 }
