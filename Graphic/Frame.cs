@@ -71,8 +71,6 @@ public class Frame : Form
         Font font = new Font(fontCollection.Families[0], 16, FontStyle.Bold);
         Brush whiteBrush = Brushes.White;
         Brush blackBrush = Brushes.Black;
-
-        // Espaciado entre líneas
         int lineHeight = 20;
 
         // Dibujar HP

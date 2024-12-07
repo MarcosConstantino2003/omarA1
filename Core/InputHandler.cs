@@ -25,7 +25,7 @@ public class InputHandler
         {
             ToggleFullScreen();
         }
-         if (e.KeyCode == Keys.Q)
+        if (e.KeyCode == Keys.Q)
         {
             Application.Exit();
         }
@@ -189,9 +189,32 @@ public class InputHandler
 
     private void HandleLobbyControls(KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
+        if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left)
         {
-            game.ResetGameForLobby();
+            game.lobbyScreen.MoveSelection(-1);
+            game.frame.Invalidate(); 
+        }
+        else if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right)
+        {
+            game.lobbyScreen.MoveSelection(1);
+            game.frame.Invalidate(); 
+        }
+        else if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
+        {
+            int selectedOption = game.lobbyScreen.GetSelectedOption();
+              switch (selectedOption)
+        {
+            case 0: // "+3 MAX HP"
+                game.omar.IncreaseMaxHP(3);
+                break;
+            case 1: // "+1 Speed"
+                game.omar.IncreaseSpeed(1);
+                break;
+            case 2: // "+1 Damage"
+                game.omar.IncreaseDamage(1);
+                break;
+        }
+            game.ResetGameForLobby(); 
         }
     }
 

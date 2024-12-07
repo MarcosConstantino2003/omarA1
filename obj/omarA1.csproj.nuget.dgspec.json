@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj": {}
+    "C:\\Users\\marco\\OneDrive\\Documentos\\OMARGAMES\\A1\\omarA1\\omarA1.csproj": {}
   },
   "projects": {
-    "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj": {
+    "C:\\Users\\marco\\OneDrive\\Documentos\\OMARGAMES\\A1\\omarA1\\omarA1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj",
+        "projectUniqueName": "C:\\Users\\marco\\OneDrive\\Documentos\\OMARGAMES\\A1\\omarA1\\omarA1.csproj",
         "projectName": "omarA1",
-        "projectPath": "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj",
+        "projectPath": "C:\\Users\\marco\\OneDrive\\Documentos\\OMARGAMES\\A1\\omarA1\\omarA1.csproj",
         "packagesPath": "C:\\Users\\marco\\.nuget\\packages\\",
-        "outputPath": "D:\\Documentos\\omargames\\a1\\omarA1\\obj\\",
+        "outputPath": "C:\\Users\\marco\\OneDrive\\Documentos\\OMARGAMES\\A1\\omarA1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\marco\\AppData\\Roaming\\NuGet\\NuGet.Config"

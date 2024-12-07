@@ -4,7 +4,8 @@ using System.Drawing.Text;
 public class LobbyScreen
 {
     private PrivateFontCollection? fontCollection;
-
+     private int selectedOption = 0; 
+    private readonly string[] options = { "+3 MAX HP", "+1 Speed", "+1 Damage" };
     public void Draw(Graphics g, Size clientSize)
     {
         // Fondo
@@ -14,30 +15,52 @@ public class LobbyScreen
             g.FillRectangle(backgroundBrush, 0, 0, clientSize.Width, clientSize.Height);  
         }
 
-        // Texto principal
-        string message = "¡Lobby nashe!";
+         // Configuración de rectángulos
+        int rectWidth = clientSize.Width / 4; 
+        int rectHeight = clientSize.Height / 2;
+        int gap = (clientSize.Width - 3 * rectWidth) / 4;
+        int rectY = (clientSize.Height - rectHeight) / 2;
+
         fontCollection = new PrivateFontCollection();
         fontCollection.AddFontFile("font\\chewypro.otf"); 
         Font font = new Font(fontCollection.Families[0], 32, FontStyle.Bold);
-        Brush brush = Brushes.Black;
 
-        SizeF messageSize = g.MeasureString(message, font);
-        float x = (clientSize.Width - messageSize.Width) / 2;
-        float y = (clientSize.Height - messageSize.Height) / 3;
+        for (int i = 0; i < 3; i++)
+        {
+            int rectX = gap + i * (rectWidth + gap);
+            Brush rectBrush = (i == selectedOption) ? Brushes.DarkBlue : Brushes.Black;
 
-        g.DrawString(message, font, brush, x, y);
+            g.FillRectangle(rectBrush, rectX, rectY, rectWidth, rectHeight);
 
-        // Botón de continuar
-        string buttonText = "Continuar";
-        Font buttonFont = new Font(fontCollection.Families[0], 24, FontStyle.Regular);
-        Brush buttonBrush = Brushes.White;
-        Brush buttonBackground = Brushes.Black;
+            // Dibujar el texto en cada rectángulo
+            fontCollection ??= new PrivateFontCollection();
+            fontCollection.AddFontFile("font\\chewypro.otf");
+            Brush textBrush = Brushes.White;
 
-        SizeF buttonSize = g.MeasureString(buttonText, buttonFont);
-        float buttonX = (clientSize.Width - buttonSize.Width) / 2;
-        float buttonY = y + messageSize.Height + 50;
+            string option = options[i];
+            SizeF textSize = g.MeasureString(option, font);
+            float textX = rectX + (rectWidth - textSize.Width) / 2;
+            float textY = rectY + (rectHeight - textSize.Height) / 2;
 
-        g.FillRectangle(buttonBackground, buttonX - 10, buttonY - 10, buttonSize.Width + 20, buttonSize.Height + 20);
-        g.DrawString(buttonText, buttonFont, buttonBrush, buttonX, buttonY);
+            g.DrawString(option, font, textBrush, textX, textY);
+
+            // Dibujar botón "Elegir" debajo del texto
+            string buttonText = "Elegir";
+            SizeF buttonSize = g.MeasureString(buttonText, font);
+            float buttonX = rectX + (rectWidth - buttonSize.Width) / 2;
+            float buttonY = rectY + rectHeight - buttonSize.Height - 20;
+
+            g.DrawString(buttonText, font, textBrush, buttonX, buttonY);
+        }
+    }
+     public void MoveSelection(int direction)
+    {
+        selectedOption = (selectedOption + direction + 3) % 3; 
+    }
+
+    public int GetSelectedOption()
+    {
+        return selectedOption;
     }
 }
+

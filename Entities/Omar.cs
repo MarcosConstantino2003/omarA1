@@ -149,6 +149,20 @@ public class Omar
         }
     }
 
+     public void DecreaseHP(float amount)
+    {
+        if (!isInvulnerable) 
+        {
+            HP -= amount;
+            if (HP < 0) HP = 0;
+            isTakingDamage = true;
+            damageStartTime = DateTime.Now;
+            isInvulnerable = true;
+            invulnerabilityTimer.Start();
+        }
+    }
+
+
     public void IncreaseSpeed(float amount)
     {
         Speed += amount;
@@ -166,20 +180,7 @@ public class Omar
             Speed = 0;
         }
     }
-
-    public void DecreaseHP(float amount)
-    {
-        if (!isInvulnerable) 
-        {
-            HP -= amount;
-            if (HP < 0) HP = 0;
-            isTakingDamage = true;
-            damageStartTime = DateTime.Now;
-            isInvulnerable = true;
-            invulnerabilityTimer.Start();
-        }
-    }
-
+   
 
     public void IncreaseShotSpeed(int amount)
     {
@@ -193,6 +194,11 @@ public class Omar
     public void IncreaseDamage(int amount)
     {
         damage += amount; 
+    }
+
+    public void IncreaseMaxHP(int amount)
+    {
+        MaxHP += amount;
     }
 
     public void ResetPosition()
