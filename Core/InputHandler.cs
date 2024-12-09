@@ -205,13 +205,13 @@ public class InputHandler
             switch (selectedOption)
             {
                 case 0: // "+3 MAX HP"
-                    game.omar.IncreaseMaxHP(3);
+                    game.omar.changeMaxHP(3);
                     break;
                 case 1: // "+1 Speed"
-                    game.omar.IncreaseSpeed(1);
+                    game.omar.changeSpeed(1);
                     break;
                 case 2: // "+1 Damage"
-                    game.omar.IncreaseDamage(1);
+                    game.omar.changeDamage(1);
                     break;
             }
             game.ResetGameForLobby();

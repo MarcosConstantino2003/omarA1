@@ -39,8 +39,12 @@ public class CollisionHandler
         {
             if (omar.IsCollidingWithEnemy(enemy))
             {
-                omar.DecreaseHP((int)enemy.Damage);
-                floatingText = $"-{(int)enemy.Damage} HP";
+                if (omar.getisInvulnerable())
+                {
+                    return;
+                }
+                int damageTaken = omar.takeDamage(enemy.Damage);
+                floatingText = $"-{damageTaken} HP";
                 floatingTextColor = Brushes.Red;
                 assignFloatingText();
             }
@@ -64,17 +68,17 @@ public class CollisionHandler
 
         if (diamond.Color == Color.Green)
         {
-            omar.IncreaseSpeed(1);
+            omar.changeSpeed(1);
             effectText = "+1 Speed";
         }
         else if (diamond.Color == Color.Cyan)
         {
-            omar.IncreaseShotSpeed(2);
+            omar.changeShotSpeed(2);
             effectText = "+2 Shot Speed";
         }
         else if (diamond.Color == Color.Black)
         {
-            omar.IncreaseDamage(1);
+            omar.changeDamage(1);
             effectText = "+1 Damage";
         }
         else if (diamond.Color == Color.Purple)
@@ -84,7 +88,7 @@ public class CollisionHandler
         }
         else if (diamond.Color == Color.Orange)
         {
-            omar.IncreaseHPRegen(1);
+            omar.changeHPRegen(1);
             effectText = "+1 HP Regen";
         }
 
@@ -116,7 +120,8 @@ public class CollisionHandler
         return floatingTextPosition;
     }
 
-    private void assignFloatingText(){
+    private void assignFloatingText()
+    {
         floatingTextPosition = new PointF(omar.X, omar.Y - 20);
         if (floatingTextTimer != null)
         {
@@ -125,7 +130,7 @@ public class CollisionHandler
         }
 
         floatingTextTimer = new System.Windows.Forms.Timer();
-        floatingTextTimer.Interval = 2000; 
+        floatingTextTimer.Interval = 2000;
         floatingTextTimer.Tick += (sender, e) =>
         {
             floatingText = "";

@@ -11,6 +11,8 @@ public class Omar
     public float HP { get; set; }
     public int damage { get; set; }
     public int shotSpeed { get; set; }
+    public float Armor { get; private set; }
+
     private bool isTakingDamage;
     public int HPRegen { get; set; }
     private DateTime damageStartTime;
@@ -40,6 +42,7 @@ public class Omar
         damage = 3;
         shotSpeed = 1;
         range = 120;
+        Armor = 0;
         //hp regen
         HPRegen = 0;
         lastRegenTime = DateTime.Now;
@@ -168,21 +171,29 @@ public class Omar
         }
     }
 
-    public void DecreaseHP(float amount)
+    public int takeDamage(float amount)
     {
         if (!isInvulnerable)
         {
-            HP -= amount;
+            //aplicar armor
+            float reductionFactor = 1 - (Armor * 0.06f); 
+            if (reductionFactor < 0) reductionFactor = 0; 
+            float finalDamage = amount * reductionFactor;
+            int roundedDamage = (int)Math.Round(finalDamage);
+            //reducir hp
+            HP -= roundedDamage;
             if (HP < 0) HP = 0;
             isTakingDamage = true;
             damageStartTime = DateTime.Now;
             isInvulnerable = true;
             invulnerabilityTimer.Start();
+            return roundedDamage;
         }
+        return 0;
     }
 
 
-    public void IncreaseSpeed(float amount)
+    public void changeSpeed(float amount)
     {
         Speed += amount;
         if (Speed > MaxSpeed)
@@ -191,65 +202,39 @@ public class Omar
         }
     }
 
-    public void DecreaseSpeed(float amount)
-    {
-        Speed -= amount;
-        if (Speed < 0)
-        {
-            Speed = 0;
-        }
-    }
-
-
-    public void IncreaseShotSpeed(int amount)
+    public void changeShotSpeed(int amount)
     {
         shotSpeed += amount;
     }
 
-    public void IncreaseHPRegen(int amount)
+    public void changeHPRegen(int amount)
     {
         HPRegen += amount;
     }
-    public void IncreaseDamage(int amount)
+    public void changeDamage(int amount)
     {
         damage += amount;
     }
 
-    public void IncreaseMaxHP(int amount)
+    public void changeMaxHP(int amount)
     {
         MaxHP += amount;
+    }
+
+    public void ChangeArmor(float amount)
+    {
+        Armor += amount;
+        if (Armor < 0) Armor = 0;
+    }
+
+    public bool getisInvulnerable(){
+        return isInvulnerable;
     }
 
     public void ResetPosition()
     {
         X = 770;
         Y = 400;
-    }
-
-    public void DrawTriangle(Graphics g, Enemy closestEnemy)
-    {
-        if (closestEnemy == null) return;
-
-        // Calcular la dirección hacia el enemigo
-        float dx = closestEnemy.Position.X - X;
-        float dy = closestEnemy.Position.Y - Y;
-        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
-
-        float directionX = dx / distance;
-        float directionY = dy / distance;
-        float triangleDistance = 40;
-
-
-        float triangleX = X + directionX * triangleDistance;
-        float triangleY = Y + directionY * triangleDistance - 10;
-
-        // Coordenadas de los tres vértices del triángulo
-        PointF p1 = new PointF(triangleX, triangleY);
-        PointF p2 = new PointF(triangleX - 10, triangleY + 20);
-        PointF p3 = new PointF(triangleX + 10, triangleY + 20);
-
-        // Dibujar el triángulo apuntando al enemigo más cercano con color azul oscuro
-        g.FillPolygon(Brushes.DarkBlue, new PointF[] { p1, p2, p3 });
     }
 
 
@@ -295,13 +280,38 @@ public class Omar
             {
                 using (Brush redBrush = new SolidBrush(Color.FromArgb(120, Color.Red))) // Semitransparente
                 {
-                    g.FillEllipse(redBrush, imageX, imageY, Size-2, Size-2);
+                    g.FillEllipse(redBrush, imageX, imageY, Size - 2, Size - 2);
                 }
             }
 
         // Dibujar el rango de disparo
         Pen rangePen = new Pen(Color.LightBlue, 1);
         g.DrawEllipse(rangePen, X - range, Y - range, range * 2, range * 2);
+    }
+    public void DrawTriangle(Graphics g, Enemy closestEnemy)
+    {
+        if (closestEnemy == null) return;
+
+        // Calcular la dirección hacia el enemigo
+        float dx = closestEnemy.Position.X - X;
+        float dy = closestEnemy.Position.Y - Y;
+        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+        float directionX = dx / distance;
+        float directionY = dy / distance;
+        float triangleDistance = 40;
+
+
+        float triangleX = X + directionX * triangleDistance;
+        float triangleY = Y + directionY * triangleDistance - 10;
+
+        // Coordenadas de los tres vértices del triángulo
+        PointF p1 = new PointF(triangleX, triangleY);
+        PointF p2 = new PointF(triangleX - 10, triangleY + 20);
+        PointF p3 = new PointF(triangleX + 10, triangleY + 20);
+
+        // Dibujar el triángulo apuntando al enemigo más cercano con color azul oscuro
+        g.FillPolygon(Brushes.DarkBlue, new PointF[] { p1, p2, p3 });
     }
 
 }

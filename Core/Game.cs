@@ -175,8 +175,7 @@ public class Game
                 }
                 map.Draw(e.Graphics);
                 omar.Draw(e.Graphics);
-                frame.DrawStatistics(e.Graphics, omar);
-                frame.DrawTimer(e.Graphics, currentWave.GetTimeLeft(), currentWave.WaveNumber);
+                frame.drawUI(e.Graphics, currentWave.GetTimeLeft(), currentWave.WaveNumber, omar);
                 break;
             case GameState.Menu:
                 menu.Draw(e.Graphics, frame.ClientSize);

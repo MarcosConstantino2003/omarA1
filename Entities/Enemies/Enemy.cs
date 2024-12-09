@@ -4,10 +4,10 @@ public abstract class Enemy : Entity
     public float Speed { get; protected set; }
     public float Defense { get; protected set; }
     public Color EnemyColor { get; protected set; }
-     public float Damage { get; protected set; }
+    public float Damage { get; protected set; }
     public Enemy(PointF position, float size, Color color) : base(position, size)
     {
-        EnemyColor = color; 
+        EnemyColor = color;
     }
 
     public virtual void MoveTowardsOmar(Omar omar)
@@ -26,18 +26,20 @@ public abstract class Enemy : Entity
 
     public virtual void TakeDamage(int damage)
     {
-        float damageReductionFactor = 1 - (Defense * 0.05f); 
-        if (damageReductionFactor < 0) damageReductionFactor = 0; 
+        {
+            float damageReductionFactor = 1 - (Defense * 0.05f);
+            if (damageReductionFactor < 0) damageReductionFactor = 0;
 
-        float reducedDamage = (damage * damageReductionFactor);
+            float reducedDamage = (damage * damageReductionFactor);
 
-        HP = Math.Max(0, HP - reducedDamage);
+            HP = Math.Max(0, HP - reducedDamage);
+        }
     }
 
     public override void Draw(Graphics g)
     {
         // Cada enemigo puede definir su color, pero este es el código común
-        Brush brush = new SolidBrush(EnemyColor); 
+        Brush brush = new SolidBrush(EnemyColor);
         Pen blackPen = new Pen(Color.Black, 2);
         g.FillRectangle(brush, Position.X, Position.Y, Size, Size);
         g.DrawRectangle(blackPen, Position.X, Position.Y, Size, Size);

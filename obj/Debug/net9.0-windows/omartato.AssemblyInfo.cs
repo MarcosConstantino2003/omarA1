@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("omartato")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e87856eb7ef4e304bd3a1c92e835d8724763889")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+83b854eb5f9c0a21c05fe76669d4d310b7bbcee9")]
 [assembly: System.Reflection.AssemblyProductAttribute("omartato")]
 [assembly: System.Reflection.AssemblyTitleAttribute("omartato")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
