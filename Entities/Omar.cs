@@ -41,7 +41,7 @@ public class Omar
         HP = MaxHP;
         damage = 3;
         shotSpeed = 1;
-        range = 120;
+        range = 180;
         Armor = 0;
         //hp regen
         HPRegen = 0;
@@ -76,8 +76,8 @@ public class Omar
         X += VelocityX;
         Y += VelocityY;
 
-        X = Math.Clamp(X, playAreaLeft + Size/2, playAreaRight - Size/2);
-        Y = Math.Clamp(Y, playAreaTop + Size/2, playAreaBottom - Size/2);
+        X = Math.Clamp(X, playAreaLeft + Size / 2, playAreaRight - Size / 2);
+        Y = Math.Clamp(Y, playAreaTop + Size / 2, playAreaBottom - Size / 2);
 
         //Regeneración de HP
         if (HPRegen > 0)
@@ -141,15 +141,12 @@ public class Omar
 
     public bool IsCollidingWithHeart(Heart heart)
     {
-        // Desplazamientos para ajustar la hitbox del corazón
-        float offsetX = heart.Size; // Ajustar hacia la derecha (10% del tamaño del corazón)
-        float offsetY = heart.Size; // Ajustar hacia abajo (10% del tamaño del corazón)
+        float offsetX = heart.Size;
+        float offsetY = heart.Size;
 
-        // Coordenadas ajustadas del corazón
         float adjustedHeartX = heart.Position.X + offsetX;
         float adjustedHeartY = heart.Position.Y + offsetY;
 
-        // Verificar colisión usando las hitboxes ajustadas
         return (X < adjustedHeartX + heart.Size &&
                 X + Size > adjustedHeartX &&
                 Y < adjustedHeartY + heart.Size &&
@@ -171,13 +168,17 @@ public class Omar
         }
     }
 
+    public void heal(){
+        HP = MaxHP;
+    }
+
     public int takeDamage(float amount)
     {
         if (!isInvulnerable)
         {
             //aplicar armor
-            float reductionFactor = 1 - (Armor * 0.06f); 
-            if (reductionFactor < 0) reductionFactor = 0; 
+            float reductionFactor = 1 - (Armor * 0.06f);
+            if (reductionFactor < 0) reductionFactor = 0;
             float finalDamage = amount * reductionFactor;
             int roundedDamage = (int)Math.Round(finalDamage);
             //reducir hp
@@ -227,7 +228,8 @@ public class Omar
         if (Armor < 0) Armor = 0;
     }
 
-    public bool getisInvulnerable(){
+    public bool getisInvulnerable()
+    {
         return isInvulnerable;
     }
 
@@ -255,10 +257,10 @@ public class Omar
         if (distance > range) return;
 
         // Crear una nueva bala saliendo desde el triángulo
-        float bulletStartX = X + directionX * 30; // Coordenada inicial X de la bala
-        float bulletStartY = Y + directionY * 30 + 20; // Coordenada inicial Y de la bala
+        float bulletStartX = X + directionX * 30;
+        float bulletStartY = Y + directionY * 30 + 20;
 
-        bullets.Add(new Bullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, damage)); // Daño de 5
+        bullets.Add(new OmarBullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, damage));
     }
 
     public void Draw(Graphics g)
@@ -270,8 +272,8 @@ public class Omar
         bool drawRedOverlay = isTakingDamage && isRed;
 
         // Dibujar la imagen centrada en las coordenadas de Omar
-        float imageX = X - Size / 2; // Centrar horizontalmente
-        float imageY = Y - Size / 2; // Centrar verticalmente
+        float imageX = X - Size / 2;
+        float imageY = Y - Size / 2;
         g.DrawImage(omarImage, imageX, imageY, Size, Size);
 
         // Si está en rojo, dibujar un rectángulo semi-transparente encima de la imagen

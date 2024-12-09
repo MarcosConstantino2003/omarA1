@@ -1,6 +1,6 @@
 public class FastEnemy : Enemy
 {
-    public FastEnemy(PointF position) : base(position, 30, Color.Purple)
+    public FastEnemy(PointF position) : base(position, 25, Color.Purple)
     {
         HP = 4;
         Speed = 1.3f;

@@ -25,7 +25,7 @@ public class Map
         diamonds = currentWave.diamonds;
         enemies = currentWave.enemies;
         hearts = currentWave.hearts;
-        collisionHandler = new CollisionHandler(omar, diamonds, enemies, hearts);
+        collisionHandler = new CollisionHandler(omar, diamonds, enemies, hearts, bullets);
         shootTimer = new System.Windows.Forms.Timer();
         shootTimer.Interval = omar.GetShootDelay();
         shootTimer.Tick += (sender, e) =>
@@ -67,7 +67,6 @@ public class Map
         collisionHandler.Update();
         omar.UpdatePosition();
         UpdateEnemies();
-        UpdateBullets();
         UpdateDiamonds();
         UpdateShootSpeed();
     }
@@ -81,7 +80,7 @@ public class Map
     {
         foreach (var enemy in enemies)
         {
-            enemy.MoveTowardsOmar(omar);
+            enemy.act(bullets, omar);
             if (enemy.HP == 0)
             {
                 enemiesToRemove.Add(enemy);
@@ -92,28 +91,7 @@ public class Map
             enemies.Remove(enemy);
         }
     }
-    public void UpdateBullets()
-    {
-        foreach (var bullet in bullets)
-        {
-            bullet.Update();
-
-            foreach (var enemy in enemies)
-            {
-                if (bullet.IsCollidingWithEnemy(enemy))
-                {
-                    enemy.TakeDamage(bullet.Damage);
-                    bulletsToRemove.Add(bullet);
-                    break;
-                }
-            }
-        }
-        foreach (var bullet in bulletsToRemove)
-        {
-            bullets.Remove(bullet);
-        }
-    }
-
+  
     public void UpdateDiamonds()
     {
         diamonds.RemoveAll(diamond => diamond.IsExpired());
@@ -128,6 +106,7 @@ public class Map
         spawner.ResetTimers();
         bullets.Clear();
     }
+    
 
     // Método para dibujar los rombos en el gráfico
     public void Draw(Graphics g)

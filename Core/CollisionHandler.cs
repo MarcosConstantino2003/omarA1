@@ -4,17 +4,19 @@ public class CollisionHandler
     private List<Diamond> diamonds;
     private List<Enemy> enemies;
     private List<Heart> hearts;
+    private List<Bullet> bullets;
     private string floatingText;
     private PointF floatingTextPosition;
     private System.Windows.Forms.Timer floatingTextTimer;
     public Brush floatingTextColor { get; set; }
 
-    public CollisionHandler(Omar omar, List<Diamond> diamonds, List<Enemy> enemies, List<Heart> hearts)
+    public CollisionHandler(Omar omar, List<Diamond> diamonds, List<Enemy> enemies, List<Heart> hearts, List<Bullet> bullets)
     {
         this.omar = omar;
         this.diamonds = diamonds;
         this.enemies = enemies;
         this.hearts = hearts;
+        this.bullets = bullets;
         floatingText = "";
         floatingTextPosition = PointF.Empty;
         floatingTextTimer = new System.Windows.Forms.Timer(); ;
@@ -59,6 +61,49 @@ public class CollisionHandler
                 hearts.Remove(heart);
                 break;
             }
+        }
+
+        CheckBulletCollisions();
+    }
+
+     public void CheckBulletCollisions()
+    {
+        List<Bullet> bulletsToRemove = new List<Bullet>();
+
+        // Revisión de las balas
+        foreach (var bullet in bullets)
+        {
+            bullet.Update();
+
+            if (bullet is EnemyBullet)
+            {
+                if (bullet.IsCollidingWithOmar(omar))
+                {
+                    omar.takeDamage(bullet.Damage);
+                    floatingText = $"-{bullet.Damage} HP";
+                    floatingTextColor = Brushes.Red;
+                    assignFloatingText();
+                    bulletsToRemove.Add(bullet); // Eliminar bala
+                }
+            }
+            else if (bullet is OmarBullet)
+            {
+                foreach (var enemy in enemies)
+                {
+                    if (bullet.IsCollidingWithEnemy(enemy))
+                    {
+                        enemy.TakeDamage(bullet.Damage);
+                        bulletsToRemove.Add(bullet); // Eliminar bala
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Eliminar las balas que han colisionado
+        foreach (var bullet in bulletsToRemove)
+        {
+            bullets.Remove(bullet);
         }
     }
 

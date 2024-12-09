@@ -24,6 +24,10 @@ public abstract class Enemy : Entity
         }
     }
 
+    public virtual void act(List<Bullet> bullets, Omar omar){
+        MoveTowardsOmar(omar);
+    }
+
     public virtual void TakeDamage(int damage)
     {
         {

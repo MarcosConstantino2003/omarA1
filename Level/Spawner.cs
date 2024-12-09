@@ -14,7 +14,7 @@ public class Spawner
     private int playAreaTop = 45;
     private int playAreaBottom = 805;
     private int diamondRate = 6000;
-    private int enemyRate = 4000;
+    private int enemyRate = 1000;
     private int heartRate = 10000;
 
 
@@ -138,7 +138,7 @@ public class Spawner
         }
         else
         {
-            return new BasicEnemy(spawnPoint);
+            return new ShootingEnemy(spawnPoint);
         }
     }
 

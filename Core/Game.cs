@@ -104,7 +104,7 @@ public class Game
 
     public void ResetGameForLobby()
     {
-        
+        omar.heal();
         currentState = GameState.InGame;
         currentWave = new Wave(currentWave.WaveNumber + 1, omar);
         gameTimer.Start();
