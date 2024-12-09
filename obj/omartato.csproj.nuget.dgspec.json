@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj": {}
+    "D:\\Documentos\\omargames\\omartato\\omartato.csproj": {}
   },
   "projects": {
-    "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj": {
+    "D:\\Documentos\\omargames\\omartato\\omartato.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj",
-        "projectName": "omarA1",
-        "projectPath": "D:\\Documentos\\omargames\\a1\\omarA1\\omarA1.csproj",
+        "projectUniqueName": "D:\\Documentos\\omargames\\omartato\\omartato.csproj",
+        "projectName": "omartato",
+        "projectPath": "D:\\Documentos\\omargames\\omartato\\omartato.csproj",
         "packagesPath": "C:\\Users\\marco\\.nuget\\packages\\",
-        "outputPath": "D:\\Documentos\\omargames\\a1\\omarA1\\obj\\",
+        "outputPath": "D:\\Documentos\\omargames\\omartato\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\marco\\AppData\\Roaming\\NuGet\\NuGet.Config"

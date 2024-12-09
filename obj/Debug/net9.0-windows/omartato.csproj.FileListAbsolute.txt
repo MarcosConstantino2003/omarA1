@@ -1,0 +1,15 @@
+D:\Documentos\omargames\omartato\bin\Debug\net9.0-windows\omartato.exe
+D:\Documentos\omargames\omartato\bin\Debug\net9.0-windows\omartato.deps.json
+D:\Documentos\omargames\omartato\bin\Debug\net9.0-windows\omartato.runtimeconfig.json
+D:\Documentos\omargames\omartato\bin\Debug\net9.0-windows\omartato.dll
+D:\Documentos\omargames\omartato\bin\Debug\net9.0-windows\omartato.pdb
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.GeneratedMSBuildEditorConfig.editorconfig
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.AssemblyInfoInputs.cache
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.AssemblyInfo.cs
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.csproj.CoreCompileInputs.cache
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.sourcelink.json
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.dll
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\refint\omartato.dll
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.pdb
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\omartato.genruntimeconfig.cache
+D:\Documentos\omargames\omartato\obj\Debug\net9.0-windows\ref\omartato.dll
