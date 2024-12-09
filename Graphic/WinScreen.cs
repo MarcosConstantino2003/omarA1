@@ -1,7 +1,9 @@
 using System.Drawing;
+using System.Drawing.Text;
 
 public class WinScreen
 {
+    private PrivateFontCollection? fontCollection;
     public void Draw(Graphics g, Size clientSize)
     {
         // Fondo
@@ -9,7 +11,10 @@ public class WinScreen
 
         // Texto principal
         string message = "¡Victoria!";
-        Font font = new Font("Arial", 36, FontStyle.Bold);
+        fontCollection = new PrivateFontCollection();
+
+        fontCollection.AddFontFile("font\\chewypro.otf");
+        Font font = new Font(fontCollection.Families[0], 32, FontStyle.Bold);
         Brush brush = Brushes.Black;
 
         SizeF messageSize = g.MeasureString(message, font);
@@ -20,7 +25,7 @@ public class WinScreen
 
         // Botón de ir al menú
         string buttonText = "Ir al menú";
-        Font buttonFont = new Font("Arial", 24, FontStyle.Regular);
+        Font buttonFont = new Font(fontCollection.Families[0], 24, FontStyle.Bold);
         Brush buttonBrush = Brushes.White;
         Brush buttonBackground = Brushes.Black;
 

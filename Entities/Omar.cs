@@ -42,7 +42,7 @@ public class Omar
         damage = 3;
         shotSpeed = 1;
         range = 180;
-        Armor = 0;
+        Armor = 3;
         //hp regen
         HPRegen = 0;
         lastRegenTime = DateTime.Now;
@@ -222,7 +222,7 @@ public class Omar
         MaxHP += amount;
     }
 
-    public void ChangeArmor(float amount)
+    public void changeArmor(int amount)
     {
         Armor += amount;
         if (Armor < 0) Armor = 0;
@@ -276,7 +276,6 @@ public class Omar
         float imageY = Y - Size / 2;
         g.DrawImage(omarImage, imageX, imageY, Size, Size);
 
-        // Si está en rojo, dibujar un rectángulo semi-transparente encima de la imagen
         if (drawRedOverlay)
             if (drawRedOverlay)
             {

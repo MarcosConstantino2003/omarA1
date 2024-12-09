@@ -1,7 +1,7 @@
 public class ShootingEnemy : Enemy
 {
     private float shootCooldown;
-    private float shootCooldownMax = 16.0f;
+    private float shootCooldownMax = 12.0f;
     public List<Bullet> bullets;
 
     public ShootingEnemy(PointF position) : base(position, 30, Color.DarkBlue)

@@ -113,8 +113,8 @@ public class CollisionHandler
 
         if (diamond.Color == Color.Green)
         {
-            omar.changeSpeed(1);
-            effectText = "+1 Speed";
+            omar.changeHPRegen(1);
+            effectText = "+1 HP Regen";
         }
         else if (diamond.Color == Color.Cyan)
         {
@@ -133,12 +133,12 @@ public class CollisionHandler
         }
         else if (diamond.Color == Color.Orange)
         {
-            omar.changeHPRegen(1);
-            effectText = "+1 HP Regen";
+            omar.changeArmor(1);
+            effectText = "+1 Armor";
         }
 
         floatingText = effectText;
-        floatingTextColor = Brushes.Yellow;
+        floatingTextColor = Brushes.Green;
         assignFloatingText();
     }
 

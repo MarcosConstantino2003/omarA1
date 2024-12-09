@@ -113,9 +113,8 @@ public class Frame : Form
         // Dibujar Armor
         string armorText = $"Armor: {omar.Armor}";
         SizeF armorSize = g.MeasureString(armorText, font);
-        Brush armorBrush = (omar.Armor > 0) ? Brushes.LightBlue : whiteBrush;
         g.DrawString(armorText, font, blackBrush, ClientSize.Width - armorSize.Width - 10, 10 + lineHeight * 5);
-        g.DrawString(armorText, font, armorBrush, ClientSize.Width - armorSize.Width - 9, 9 + lineHeight * 5);
+        g.DrawString(armorText, font, whiteBrush, ClientSize.Width - armorSize.Width - 9, 9 + lineHeight * 5);
     }
     public void drawLifeBar(Graphics g, Omar omar)
     {

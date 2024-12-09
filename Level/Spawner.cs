@@ -14,7 +14,7 @@ public class Spawner
     private int playAreaTop = 45;
     private int playAreaBottom = 805;
     private int diamondRate = 6000;
-    private int enemyRate = 1000;
+    private int enemyRate = 5000;
     private int heartRate = 10000;
 
 
@@ -79,22 +79,48 @@ public class Spawner
 
     private async void SpawnEnemies(object? sender, EventArgs e)
     {
-        int numberOfEnemies = random.Next(3, 7);
         PointF centerPoint = GetValidSpawnPoint();
-
         spawnMarkers.Add(centerPoint);
         await Task.Delay(400);
+
+        // Determinar el tipo de enemigo a spawnear según las probabilidades
+        int enemyTypeChance = random.Next(1, 101); // 1-100
+
+        int numberOfEnemies;
+        Func<PointF, Enemy> enemyFactory;
+
+        if (enemyTypeChance <= 10) // 10% - ShootingEnemy
+        {
+            numberOfEnemies = 2; // Siempre 2
+            enemyFactory = spawnPoint => new ShootingEnemy(spawnPoint);
+        }
+        else if (enemyTypeChance <= 20) // 10% - SlowEnemy
+        {
+            numberOfEnemies = random.Next(1, 4); // Entre 1 y 3
+            enemyFactory = spawnPoint => new SlowEnemy(spawnPoint);
+        }
+        else if (enemyTypeChance <= 40) // 20% - FastEnemy
+        {
+            numberOfEnemies = random.Next(3, 6); // Entre 3 y 5
+            enemyFactory = spawnPoint => new FastEnemy(spawnPoint);
+        }
+        else // 60% - BasicEnemy
+        {
+            numberOfEnemies = random.Next(4, 8); // Entre 4 y 7
+            enemyFactory = spawnPoint => new BasicEnemy(spawnPoint);
+        }
 
         for (int i = 0; i < numberOfEnemies; i++)
         {
             PointF spawnPoint = GetRandomSpawnPoint(centerPoint);
-            Enemy newEnemy = GetRandomEnemyType(spawnPoint);
+            Enemy newEnemy = enemyFactory(spawnPoint);
 
             enemies.Add(newEnemy);
 
-            spawnMarkers.Remove(centerPoint);
-            await Task.Delay(200);
+            await Task.Delay(200); // Pequeña pausa entre spawns
         }
+
+        spawnMarkers.Remove(centerPoint);
     }
 
     // Método privado para obtener un punto de spawn válido
@@ -123,28 +149,9 @@ public class Spawner
         return new PointF(x, y);
     }
 
-    // Método privado para obtener un tipo de enemigo aleatorio
-    private Enemy GetRandomEnemyType(PointF spawnPoint)
-    {
-        int enemyTypeChance = random.Next(1, 101);
-
-        if (enemyTypeChance <= 10)
-        {
-            return new FastEnemy(spawnPoint);
-        }
-        else if (enemyTypeChance <= 25)
-        {
-            return new SlowEnemy(spawnPoint);
-        }
-        else
-        {
-            return new ShootingEnemy(spawnPoint);
-        }
-    }
-
     private bool IsTooCloseToOmar(PointF point)
     {
-        const float minimumDistance = 100;
+        const float minimumDistance = 200;
         float dx = point.X - omar.X;
         float dy = point.Y - omar.Y;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
@@ -185,14 +192,44 @@ public class Spawner
         enemyTimer.Interval = enemyRate;
         heartTimer.Interval = heartRate;
 
+        diamondTimer.Tick += SpawnDiamonds;
+        enemyTimer.Tick += SpawnEnemies;
+        heartTimer.Tick += SpawnHearts;
+
         diamondTimer.Start();
         enemyTimer.Start();
         heartTimer.Start();
     }
-    public void StopSpawning()
+    public void PauseTimers()
     {
         diamondTimer.Stop();
         enemyTimer.Stop();
         heartTimer.Stop();
+        foreach (var heart in hearts)
+        {
+            heart.Pause();
+        }
+
+        foreach (var diamond in diamonds)
+        {
+            diamond.Pause();
+        }
     }
+
+    public void ResumeTimers()
+    {
+        diamondTimer.Start();
+        enemyTimer.Start();
+        heartTimer.Start();
+        foreach (var heart in hearts)
+        {
+            heart.Resume();
+        }
+
+        foreach (var diamond in diamonds)
+        {
+            diamond.Resume();
+        }
+    }
+
 }

@@ -96,10 +96,10 @@ public class Game
         {
             currentState = GameState.Lobby;
         }
+        gameTimer.Stop();
+        currentWave.Pause();
         map.ClearObjects();
         omar.ResetPosition();
-        gameTimer.Stop();
-        frame.Invalidate();
     }
 
     public void ResetGameForLobby()
@@ -107,6 +107,7 @@ public class Game
         omar.heal();
         currentState = GameState.InGame;
         currentWave = new Wave(currentWave.WaveNumber + 1, omar);
+        map = new Map(omar, currentWave);
         gameTimer.Start();
         frame.Invalidate();
     }
@@ -115,9 +116,8 @@ public class Game
     public void PauseGame()
     {
         currentState = GameState.Paused;
-
-        currentWave.Pause();
         gameTimer.Stop();
+        currentWave.Pause();
         frame.Invalidate();
     }
 
@@ -157,6 +157,8 @@ public class Game
                 }
                 break;
             case GameState.Paused:
+                break;
+            case GameState.Lobby:
                 break;
         }
     }

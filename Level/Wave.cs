@@ -18,7 +18,7 @@ public class Wave
         diamonds = new List<Diamond>();
         enemies = new List<Enemy>();
         hearts = new List<Heart>();
-        this.spawner = new Spawner(omar, diamonds, enemies, hearts);
+        spawner = new Spawner(omar, diamonds, enemies, hearts);
     }
 
      public Wave(int waveNumber, Omar omar)
@@ -49,7 +49,11 @@ public class Wave
 
     public void Pause()
     {
-        if (pauseStartTime == null) pauseStartTime = DateTime.Now;
+       if (pauseStartTime == null)
+    {
+        pauseStartTime = DateTime.Now;
+        spawner.PauseTimers(); 
+    }
     }
 
     public void Resume()
@@ -58,6 +62,7 @@ public class Wave
         {
             pausedDuration += DateTime.Now - pauseStartTime.Value;
             pauseStartTime = null;
+            spawner.ResumeTimers();
         }
     }
 }
