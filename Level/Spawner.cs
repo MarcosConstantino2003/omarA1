@@ -15,7 +15,7 @@ public class Spawner
     private int playAreaBottom = 805;
     private int diamondRate = 6000;
     private int enemyRate = 4000;
-    private int heartRate = 2000;
+    private int heartRate = 10000;
 
 
     public Spawner(Omar omar, List<Diamond> diamonds, List<Enemy> enemies, List<Heart> hearts)

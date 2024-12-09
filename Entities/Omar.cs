@@ -23,9 +23,9 @@ public class Omar
     private DateTime lastRegenTime;
     private float regenInterval;
     private int playAreaLeft = 270;
-    private int playAreaRight = 1230;
-    private int playAreaTop = 45;
-    private int playAreaBottom = 805;
+    private int playAreaRight = 1270;
+    private int playAreaTop = 25;
+    private int playAreaBottom = 825;
 
     public Omar(float x, float y, float size)
     {
@@ -76,8 +76,8 @@ public class Omar
         X += VelocityX;
         Y += VelocityY;
 
-        X = Math.Clamp(X, playAreaLeft, playAreaRight);
-        Y = Math.Clamp(Y, playAreaTop, playAreaBottom);
+        X = Math.Clamp(X, playAreaLeft + Size/2, playAreaRight - Size/2);
+        Y = Math.Clamp(Y, playAreaTop + Size/2, playAreaBottom - Size/2);
 
         //Regeneración de HP
         if (HPRegen > 0)
