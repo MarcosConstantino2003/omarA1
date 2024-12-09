@@ -4,6 +4,7 @@ public abstract class Enemy : Entity
     public float Speed { get; protected set; }
     public float Defense { get; protected set; }
     public Color EnemyColor { get; protected set; }
+     public float Damage { get; protected set; }
     public Enemy(PointF position, float size, Color color) : base(position, size)
     {
         EnemyColor = color; 

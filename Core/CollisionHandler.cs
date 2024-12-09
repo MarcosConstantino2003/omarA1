@@ -7,6 +7,7 @@ public class CollisionHandler
     private string floatingText;
     private PointF floatingTextPosition;
     private System.Windows.Forms.Timer floatingTextTimer;
+    public Brush floatingTextColor { get; set; }
 
     public CollisionHandler(Omar omar, List<Diamond> diamonds, List<Enemy> enemies, List<Heart> hearts)
     {
@@ -16,7 +17,8 @@ public class CollisionHandler
         this.hearts = hearts;
         floatingText = "";
         floatingTextPosition = PointF.Empty;
-        floatingTextTimer = new System.Windows.Forms.Timer();;
+        floatingTextTimer = new System.Windows.Forms.Timer(); ;
+        floatingTextColor = Brushes.Yellow;
     }
 
     public void CheckCollisions()
@@ -37,8 +39,10 @@ public class CollisionHandler
         {
             if (omar.IsCollidingWithEnemy(enemy))
             {
-                omar.DecreaseHP(3);
-                break; 
+                omar.DecreaseHP((int)enemy.Damage);
+                floatingText = $"-{(int)enemy.Damage} HP";
+                floatingTextColor = Brushes.Red;
+                assignFloatingText();
             }
         }
 
@@ -49,7 +53,7 @@ public class CollisionHandler
             {
                 HandleHeartCollision(heart);
                 hearts.Remove(heart);
-                break; // Solo se aplica la primera colisión
+                break;
             }
         }
     }
@@ -84,49 +88,17 @@ public class CollisionHandler
             effectText = "+1 HP Regen";
         }
 
-        // Establecer el texto flotante y su posición
         floatingText = effectText;
-        floatingTextPosition = new PointF(omar.X, omar.Y - 20);
-
-        // Temporizador para eliminar el texto flotante
-        if (floatingTextTimer != null)
-        {
-            floatingTextTimer.Stop();
-            floatingTextTimer.Dispose();
-        }
-
-        floatingTextTimer = new System.Windows.Forms.Timer();
-        floatingTextTimer.Interval = 2000; // 2 segundos
-        floatingTextTimer.Tick += (sender, e) =>
-        {
-            floatingText = "";
-            floatingTextTimer.Stop();
-            floatingTextTimer.Dispose();
-        };
-        floatingTextTimer.Start();
+        floatingTextColor = Brushes.Yellow;
+        assignFloatingText();
     }
 
     private void HandleHeartCollision(Heart heart)
     {
         omar.IncreaseHP(4); // Aumenta 4 HP por corazón recogido
         floatingText = "+4 HP";
-
-        // Temporizador para eliminar el texto flotante
-        if (floatingTextTimer != null)
-        {
-            floatingTextTimer.Stop();
-            floatingTextTimer.Dispose();
-        }
-
-        floatingTextTimer = new System.Windows.Forms.Timer();
-        floatingTextTimer.Interval = 2000; // 2 segundos
-        floatingTextTimer.Tick += (sender, e) =>
-        {
-            floatingText = "";
-            floatingTextTimer.Stop();
-            floatingTextTimer.Dispose();
-        };
-        floatingTextTimer.Start();
+        floatingTextColor = Brushes.Yellow;
+        assignFloatingText();
     }
 
     public void Update()
@@ -142,5 +114,24 @@ public class CollisionHandler
     public PointF GetFloatingTextPosition()
     {
         return floatingTextPosition;
+    }
+
+    private void assignFloatingText(){
+        floatingTextPosition = new PointF(omar.X, omar.Y - 20);
+        if (floatingTextTimer != null)
+        {
+            floatingTextTimer.Stop();
+            floatingTextTimer.Dispose();
+        }
+
+        floatingTextTimer = new System.Windows.Forms.Timer();
+        floatingTextTimer.Interval = 2000; 
+        floatingTextTimer.Tick += (sender, e) =>
+        {
+            floatingText = "";
+            floatingTextTimer.Stop();
+            floatingTextTimer.Dispose();
+        };
+        floatingTextTimer.Start();
     }
 }

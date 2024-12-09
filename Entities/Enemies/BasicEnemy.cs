@@ -5,6 +5,7 @@ public class BasicEnemy : Enemy
         HP = 5;
         Speed = 1.0f;
         Defense = 0;
+        Damage = 3;
     }
 
     protected override Color GetEnemyColor()

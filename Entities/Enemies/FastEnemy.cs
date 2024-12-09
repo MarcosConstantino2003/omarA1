@@ -5,6 +5,7 @@ public class FastEnemy : Enemy
         HP = 4;
         Speed = 1.3f;
         Defense = 0;
+        Damage = 2;
     }
 
      protected override Color GetEnemyColor()

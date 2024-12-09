@@ -164,7 +164,7 @@ public class Map
         if (!string.IsNullOrEmpty(floatingText))
         {
             Font font = new Font("Arial", 12, FontStyle.Bold);
-            Brush textBrush = Brushes.Yellow;
+            Brush textBrush = collisionHandler.floatingTextColor;
             Brush shadowBrush = Brushes.Black;
 
             // Medir el tamaño del texto
