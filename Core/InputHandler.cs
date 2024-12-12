@@ -62,12 +62,12 @@ public class InputHandler
     {
         if (e.KeyCode == Keys.W || e.KeyCode == Keys.S)
         {
-            omar.VelocityY = 0;
+            omar.velocityY = 0;
         }
 
         if (e.KeyCode == Keys.A || e.KeyCode == Keys.D)
         {
-            omar.VelocityX = 0;
+            omar.velocityX = 0;
         }
         pressedKeys.Remove(e.KeyCode);
     }

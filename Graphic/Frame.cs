@@ -80,7 +80,7 @@ public class Frame : Form
         int lineHeight = 20;
 
         // Dibujar HP Regen
-        string regenText = $"HP Regen: {omar.HPRegen}"; // Nueva estadística
+        string regenText = $"HP Regen: {omar.hpRegen}"; 
         SizeF regenSize = g.MeasureString(regenText, font);
         g.DrawString(regenText, font, blackBrush, ClientSize.Width - regenSize.Width - 10, 10);
         g.DrawString(regenText, font, whiteBrush, ClientSize.Width - regenSize.Width - 9, 9);
@@ -91,30 +91,66 @@ public class Frame : Form
         g.DrawString(dmgText, font, blackBrush, ClientSize.Width - dmgSize.Width - 10, 10 + lineHeight);
         g.DrawString(dmgText, font, whiteBrush, ClientSize.Width - dmgSize.Width - 9, 9 + lineHeight );
 
+        // Dibujar melee
+        string meleeText = $"Melee Damage: {omar.meleeDamage}";
+        SizeF meleeSize = g.MeasureString(meleeText, font);
+        g.DrawString(meleeText, font, blackBrush, ClientSize.Width - meleeSize.Width - 10, 10 + lineHeight * 2) ;
+        g.DrawString(meleeText, font, whiteBrush, ClientSize.Width - meleeSize.Width - 9, 9 + lineHeight * 2);
+
+        // Dibujar ranged
+        string rangedText = $"Ranged Damage: {omar.rangedDamage}";
+        SizeF rangedSize = g.MeasureString(rangedText, font);
+        g.DrawString(rangedText, font, blackBrush, ClientSize.Width - rangedSize.Width - 10, 10 + lineHeight * 3);
+        g.DrawString(rangedText, font, whiteBrush, ClientSize.Width - rangedSize.Width - 9, 9 + lineHeight * 3);
+
+        // Dibujar elemental
+        string elemText = $"Elemental Damage: {omar.elementalDamage}";
+        SizeF elemSize = g.MeasureString(elemText, font);
+        g.DrawString(elemText, font, blackBrush, ClientSize.Width - elemSize.Width - 10, 10 + lineHeight * 4);
+        g.DrawString(elemText, font, whiteBrush, ClientSize.Width - elemSize.Width - 9, 9 + lineHeight * 4);
+
         // Dibujar velocidad de disparo
         string shotSpeedText = $"Shot Speed: {omar.shotSpeed}";
         SizeF shotSpeedSize = g.MeasureString(shotSpeedText, font);
-        g.DrawString(shotSpeedText, font, blackBrush, ClientSize.Width - shotSpeedSize.Width - 10, 10 + lineHeight * 2);
-        g.DrawString(shotSpeedText, font, whiteBrush, ClientSize.Width - shotSpeedSize.Width - 9, 9 + lineHeight * 2);
+        g.DrawString(shotSpeedText, font, blackBrush, ClientSize.Width - shotSpeedSize.Width - 10, 10 + lineHeight * 5);
+        g.DrawString(shotSpeedText, font, whiteBrush, ClientSize.Width - shotSpeedSize.Width - 9, 9 + lineHeight * 5);
 
         // Dibujar velocidad
-        string speedText = $"Speed: {omar.Speed}";
+        string speedText = $"Speed: {omar.speed}";
         SizeF speedSize = g.MeasureString(speedText, font);
-        Brush speedBrush = (omar.Speed == omar.MaxSpeed) ? Brushes.DarkRed : whiteBrush;
-        g.DrawString(speedText, font, blackBrush, ClientSize.Width - speedSize.Width - 10, 10 + lineHeight * 3);
-        g.DrawString(speedText, font, speedBrush, ClientSize.Width - speedSize.Width - 9, 9 + lineHeight * 3);
+        Brush speedBrush = (omar.speed == omar.maxSpeed) ? Brushes.DarkRed : whiteBrush;
+        g.DrawString(speedText, font, blackBrush, ClientSize.Width - speedSize.Width - 10, 10 + lineHeight * 6);
+        g.DrawString(speedText, font, speedBrush, ClientSize.Width - speedSize.Width - 9, 9 + lineHeight * 6);
 
         // Dibujar rango
         string rangeText = $"Range: {omar.range}";
         SizeF rangeSize = g.MeasureString(rangeText, font);
-        g.DrawString(rangeText, font, blackBrush, ClientSize.Width - rangeSize.Width - 10, 10 + lineHeight * 4);
-        g.DrawString(rangeText, font, whiteBrush, ClientSize.Width - rangeSize.Width - 9, 9 + lineHeight * 4);
+        g.DrawString(rangeText, font, blackBrush, ClientSize.Width - rangeSize.Width - 10, 10 + lineHeight * 7);
+        g.DrawString(rangeText, font, whiteBrush, ClientSize.Width - rangeSize.Width - 9, 9 + lineHeight * 7);
 
-        // Dibujar Armor
-        string armorText = $"Armor: {omar.Armor}";
+        // Dibujar armor
+        string armorText = $"Armor: {omar.armor}";
         SizeF armorSize = g.MeasureString(armorText, font);
-        g.DrawString(armorText, font, blackBrush, ClientSize.Width - armorSize.Width - 10, 10 + lineHeight * 5);
-        g.DrawString(armorText, font, whiteBrush, ClientSize.Width - armorSize.Width - 9, 9 + lineHeight * 5);
+        g.DrawString(armorText, font, blackBrush, ClientSize.Width - armorSize.Width - 10, 10 + lineHeight * 8);
+        g.DrawString(armorText, font, whiteBrush, ClientSize.Width - armorSize.Width - 9, 9 + lineHeight * 8);
+
+        // Dibujar engineering
+        string engText = $"Engineering: {omar.engineering}";
+        SizeF engSize = g.MeasureString(engText, font);
+        g.DrawString(engText, font, blackBrush, ClientSize.Width - engSize.Width - 10, 10 + lineHeight * 9);
+        g.DrawString(engText, font, whiteBrush, ClientSize.Width - engSize.Width - 9, 9 + lineHeight * 9);
+
+        // Dibujar luck
+        string luckText = $"Luck: {omar.luck}";
+        SizeF luckSize = g.MeasureString(luckText, font);
+        g.DrawString(luckText, font, blackBrush, ClientSize.Width - luckSize.Width - 10, 10 + lineHeight * 10);
+        g.DrawString(luckText, font, whiteBrush, ClientSize.Width - luckSize.Width - 9, 9 + lineHeight * 10);
+
+        // Dibujar harvesting
+        string harvestingText = $"Harvesting: {omar.harvesting}";
+        SizeF harvestingSize = g.MeasureString(harvestingText, font);
+        g.DrawString(harvestingText, font, blackBrush, ClientSize.Width - harvestingSize.Width - 10, 10 + lineHeight * 11);
+        g.DrawString(harvestingText, font, whiteBrush, ClientSize.Width - harvestingSize.Width - 9, 9 + lineHeight * 11);
     }
     public void drawLifeBar(Graphics g, Omar omar)
     {
@@ -129,7 +165,7 @@ public class Frame : Form
         Brush fillBrush = Brushes.Red;
 
         // Cálculo de proporción de vida
-        float lifePercentage = omar.HP / omar.MaxHP;
+        float lifePercentage = omar.hp / omar.maxHP;
         int filledWidth = (int)(barWidth * lifePercentage);
 
         // Dibujar fondo de la barra (gris)
@@ -143,7 +179,7 @@ public class Frame : Form
         g.DrawRectangle(borderPen, barX, barY, barWidth, barHeight);
 
         // Texto de vida (centrado)
-        string hpText = $"{omar.HP:F0} / {omar.MaxHP:F0}";
+        string hpText = $"{omar.hp:F0} / {omar.maxHP:F0}";
         using ( Font font = new Font(fontCollection.Families[0], 14, FontStyle.Bold))
         {
             // Medir el tamaño del texto

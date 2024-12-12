@@ -151,7 +151,7 @@ public class Game
                 {
                     GoToLobby();
                 }
-                if (omar.HP <= 0)
+                if (omar.hp <= 0)
                 {
                     currentState = GameState.GameOver;
                 }

@@ -32,14 +32,14 @@ public abstract class Bullet : Entity
     public bool IsCollidingWithOmar(Omar omar)
     {
         // Ajusta la hitbox de la bala moviéndola a la izquierda y hacia arriba
-        float adjustedX = Position.X + omar.Size/2;
-        float adjustedY = Position.Y + omar.Size/2;
+        float adjustedX = Position.X + omar.size/2;
+        float adjustedY = Position.Y + omar.size/2;
 
         // Realiza la colisión usando la hitbox ajustada
         return (adjustedX + Size > omar.X &&
-                adjustedX < omar.X + omar.Size &&
+                adjustedX < omar.X + omar.size &&
                 adjustedY + Size > omar.Y &&
-                adjustedY < omar.Y + omar.Size);
+                adjustedY < omar.Y + omar.size);
     }
 }
 

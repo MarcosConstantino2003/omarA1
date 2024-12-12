@@ -152,7 +152,7 @@ public class Map
             // Calcular posición del texto centrado sobre Omar
             PointF textPosition = new PointF(
                 omar.X - (textSize.Width / 2), // Centrado en X
-                omar.Y - omar.Size // Justo encima en Y
+                omar.Y - omar.size // Justo encima en Y
             );
 
             // Sombra negra para el texto
