@@ -11,7 +11,6 @@ public class Map
     private Spawner spawner;
     private CollisionHandler collisionHandler;
     private System.Windows.Forms.Timer shootTimer;
-    private Wave currentWave;
 
     public Map(Omar omar, Wave currentWave)
     {
@@ -20,7 +19,6 @@ public class Map
         bullets = new List<Bullet>();
         bulletsToRemove = new List<Bullet>();
         random = new Random();
-        this.currentWave = currentWave;
         spawner = currentWave.Spawner;
         diamonds = currentWave.diamonds;
         enemies = currentWave.enemies;
@@ -30,37 +28,22 @@ public class Map
         shootTimer.Interval = omar.GetShootDelay();
         shootTimer.Tick += (sender, e) =>
         {
-            var closestEnemy = GetClosestEnemy();
-            if (closestEnemy != null)
+             // Disparar con cada arma
+            foreach (var weapon in omar.weapons)
             {
-                omar.Shoot(bullets, closestEnemy);
+                var closestEnemy = weapon.GetClosestEnemy(enemies);
+                if (closestEnemy != null)
+                {
+                    weapon.closestEnemy = closestEnemy;
+                    omar.Shoot(bullets, closestEnemy); // Llama al Shoot de Omar, pasando la bala y el enemigo más cercano de la arma
+                }
             }
         };
         shootTimer.Start();
     }
 
 
-    // Método para encontrar el enemigo más cercano a Omar
-    public Enemy? GetClosestEnemy()
-    {
-        Enemy? closestEnemy = null;
-        float closestDistance = float.MaxValue;
 
-        foreach (var enemy in enemies)
-        {
-            float dx = enemy.Position.X - omar.X;
-            float dy = enemy.Position.Y - omar.Y;
-            float distance = (float)Math.Sqrt(dx * dx + dy * dy);
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestEnemy = enemy;
-            }
-        }
-
-        return closestEnemy;
-    }
 
     public void update()
     {
@@ -128,11 +111,6 @@ public class Map
             heart.Draw(g);
         }
         //gun
-        Enemy? closestEnemy = GetClosestEnemy();
-        if (closestEnemy != null)
-        {
-            omar.DrawTriangle(g, closestEnemy);
-        }
         //balas
         foreach (var bullet in bullets)
         {

@@ -24,6 +24,7 @@ public class Omar
     public int critChance { get; set; }
     public int harvesting { get; set; }
     public int luck { get; set; }
+    public List<Weapon> weapons { get; set; }
     private bool isTakingDamage;
     private DateTime damageStartTime;
     private bool isRed;
@@ -49,7 +50,9 @@ public class Omar
         maxSpeed = 9;
         maxHP = 15;
         hp = maxHP;
-        damage = 3;
+        damage = 0;
+        rangedDamage = 0;
+        meleeDamage = 0;
         shotSpeed = 1;
         range = 180;
         armor = 3;
@@ -65,6 +68,8 @@ public class Omar
             isInvulnerable = false;
             invulnerabilityTimer.Stop();
         };
+        //weapons
+        weapons = new List<Weapon> { new Pistol(this) };   
     }
 
     public void MoveSmooth(float deltaX, float deltaY)
@@ -253,30 +258,11 @@ public class Omar
 
     public void Shoot(List<Bullet> bullets, Enemy closestEnemy)
     {
-        if (closestEnemy == null) return;
-
-        // Calcular la dirección hacia el enemigo más cercano
-        float triangleBaseX = X + 30;
-        float triangleBaseY = Y - 30;
-        float dx = closestEnemy.Position.X - triangleBaseX;
-        float dy = closestEnemy.Position.Y - triangleBaseY;
-        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
-
-        if (distance > range) return;
-
-        // Calcular el ángulo hacia el enemigo
-        float angle = (float)Math.Atan2(dy, dx);
-        float adjustedAngle = angle - 0.05f; // 5 grados en radianes
-
-        // Ajustar la posición inicial de la bala en la punta del triángulo
-         float bulletStartX = triangleBaseX + (float)Math.Cos(adjustedAngle) * 10; // Longitud ajustada desde el centro
-    float bulletStartY = triangleBaseY + (float)Math.Sin(adjustedAngle) * 10;
-
-        // Calcular la dirección normalizada con el ángulo ajustado
-        float directionX = (float)Math.Cos(adjustedAngle);
-        float directionY = (float)Math.Sin(adjustedAngle);
-        // Crear la bala
-        bullets.Add(new OmarBullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, damage));
+        // Usar el método de cada arma en la lista
+        foreach (var weapon in weapons)
+        {
+              weapon.Shoot(bullets, closestEnemy);
+        }
     }
 
 
@@ -301,48 +287,11 @@ public class Omar
                     g.FillEllipse(redBrush, imageX, imageY, size - 2, size - 2);
                 }
             }
-
-    }
-    public void DrawTriangle(Graphics g, Enemy closestEnemy)
-    {
-        // Posición fija del triángulo relativa a Omar
-        float triangleBaseX = X + 30;
-        float triangleBaseY = Y - 30;
-
-        // Calcular el ángulo hacia el enemigo más cercano
-        float angle = 0;
-        if (closestEnemy != null)
+        // Dibujar todas las armas
+        foreach (var weapon in weapons)
         {
-            float dx = closestEnemy.Position.X - triangleBaseX;
-            float dy = closestEnemy.Position.Y - triangleBaseY;
-            angle = (float)(Math.Atan2(dy, dx) * (180 / Math.PI));
+              weapon.Draw(g); // Llamar a la lógica de dibujo de cada arma
         }
-
-        // Dibujar el rango de disparo (círculo celeste) en la base del triángulo
-        Pen rangePen = new Pen(Color.LightBlue, 1);
-        g.DrawEllipse(rangePen, triangleBaseX - range, triangleBaseY - range, range * 2, range * 2);
-
-        // Guardar el estado de transformación original
-        GraphicsState state = g.Save();
-
-        // Aplicar rotación
-        g.TranslateTransform(triangleBaseX, triangleBaseY); // Mover el origen de rotación al centro del triángulo
-        g.RotateTransform(angle + 90); // Ajustar 90 grados para que la punta apunte al enemigo
-
-        // Coordenadas relativas del triángulo
-        PointF[] trianglePoints = new PointF[]
-        {
-        new PointF(0, -10),    // Punta del triángulo
-        new PointF(-10, 10),   // Esquina izquierda
-        new PointF(10, 10)     // Esquina derecha
-        };
-
-        // Dibujar el triángulo
-        g.FillPolygon(Brushes.DarkBlue, trianglePoints);
-
-
-        // Restaurar el estado original
-        g.Restore(state);
     }
 
 

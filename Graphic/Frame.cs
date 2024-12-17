@@ -86,7 +86,7 @@ public class Frame : Form
         g.DrawString(regenText, font, whiteBrush, ClientSize.Width - regenSize.Width - 9, 9);
 
         // Dibujar daño
-        string dmgText = $"Damage: {omar.damage}";
+        string dmgText = $"% Damage: {omar.damage}";
         SizeF dmgSize = g.MeasureString(dmgText, font);
         g.DrawString(dmgText, font, blackBrush, ClientSize.Width - dmgSize.Width - 10, 10 + lineHeight);
         g.DrawString(dmgText, font, whiteBrush, ClientSize.Width - dmgSize.Width - 9, 9 + lineHeight );
