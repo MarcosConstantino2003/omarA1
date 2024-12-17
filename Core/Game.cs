@@ -26,7 +26,7 @@ public class Game
     private InputHandler inputHandler;
     private Wave currentWave;
     private const int waveTotal = 5;
-    private const int tiempoInicialWave = 20;
+    private const int tiempoInicialWave = 30;
     private readonly Rectangle playArea = new Rectangle(270, 25, 1000, 800);
 
 

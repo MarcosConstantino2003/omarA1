@@ -81,7 +81,7 @@ public class Map
         foreach (var enemy in enemies)
         {
             enemy.act(bullets, omar);
-            if (enemy.HP == 0)
+            if (enemy.HP <= 0)
             {
                 enemiesToRemove.Add(enemy);
             }

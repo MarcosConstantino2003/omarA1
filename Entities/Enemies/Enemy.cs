@@ -34,7 +34,7 @@ public abstract class Enemy : Entity
             float damageReductionFactor = 1 - (Defense * 0.05f);
             if (damageReductionFactor < 0) damageReductionFactor = 0;
 
-            float reducedDamage = (damage * damageReductionFactor);
+            float reducedDamage = damage * damageReductionFactor;
 
             HP = Math.Max(0, HP - reducedDamage);
         }
@@ -48,7 +48,7 @@ public abstract class Enemy : Entity
         g.FillRectangle(brush, Position.X, Position.Y, Size, Size);
         g.DrawRectangle(blackPen, Position.X, Position.Y, Size, Size);
 
-        string hpText = $"HP: {HP:F1}";
+        string hpText = $"HP: {HP:F2}";
         using (Font font = new Font("Arial", 10, FontStyle.Bold))
         {
             SizeF textSize = g.MeasureString(hpText, font);

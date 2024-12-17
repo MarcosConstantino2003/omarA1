@@ -1,3 +1,6 @@
+using System.Data;
+using System.Drawing.Drawing2D;
+
 public class Omar
 {
     public float X { get; set; }
@@ -15,7 +18,7 @@ public class Omar
     public int rangedDamage { get; set; }
     public int elementalDamage { get; set; }
     public int shotSpeed { get; set; }
-     public float speed { get; set; }
+    public float speed { get; set; }
     public float armor { get; private set; }
     public int engineering { get; set; }
     public int critChance { get; set; }
@@ -120,8 +123,8 @@ public class Omar
     public bool IsCollidingWithDiamond(Diamond diamond)
     {
         // Desplazamientos para ajustar la hitbox del diamante
-        float offsetX = diamond.Size * 0.5f; 
-        float offsetY = diamond.Size * 0.5f; 
+        float offsetX = diamond.Size * 0.5f;
+        float offsetY = diamond.Size * 0.5f;
 
         // Coordenadas ajustadas del diamante
         float adjustedDiamondX = diamond.Position.X + offsetX;
@@ -175,7 +178,8 @@ public class Omar
         }
     }
 
-    public void heal(){
+    public void heal()
+    {
         hp = maxHP;
     }
 
@@ -252,23 +256,29 @@ public class Omar
         if (closestEnemy == null) return;
 
         // Calcular la dirección hacia el enemigo más cercano
-        float dx = closestEnemy.Position.X - X;
-        float dy = closestEnemy.Position.Y - Y;
+        float triangleBaseX = X + 30;
+        float triangleBaseY = Y - 30;
+        float dx = closestEnemy.Position.X - triangleBaseX;
+        float dy = closestEnemy.Position.Y - triangleBaseY;
         float distance = (float)Math.Sqrt(dx * dx + dy * dy);
 
-        // Normalizar la dirección
-        float directionX = dx / distance;
-        float directionY = dy / distance;
-
-        // Verificar si el enemigo está dentro del rango
         if (distance > range) return;
 
-        // Crear una nueva bala saliendo desde el triángulo
-        float bulletStartX = X + directionX * 30;
-        float bulletStartY = Y + directionY * 30 + 20;
+        // Calcular el ángulo hacia el enemigo
+        float angle = (float)Math.Atan2(dy, dx);
+        float adjustedAngle = angle - 0.05f; // 5 grados en radianes
 
+        // Ajustar la posición inicial de la bala en la punta del triángulo
+         float bulletStartX = triangleBaseX + (float)Math.Cos(adjustedAngle) * 10; // Longitud ajustada desde el centro
+    float bulletStartY = triangleBaseY + (float)Math.Sin(adjustedAngle) * 10;
+
+        // Calcular la dirección normalizada con el ángulo ajustado
+        float directionX = (float)Math.Cos(adjustedAngle);
+        float directionY = (float)Math.Sin(adjustedAngle);
+        // Crear la bala
         bullets.Add(new OmarBullet(new PointF(bulletStartX, bulletStartY), directionX, directionY, damage));
     }
+
 
     public void Draw(Graphics g)
     {
@@ -292,34 +302,48 @@ public class Omar
                 }
             }
 
-        // Dibujar el rango de disparo
-        Pen rangePen = new Pen(Color.LightBlue, 1);
-        g.DrawEllipse(rangePen, X - range, Y - range, range * 2, range * 2);
     }
     public void DrawTriangle(Graphics g, Enemy closestEnemy)
     {
-        if (closestEnemy == null) return;
+        // Posición fija del triángulo relativa a Omar
+        float triangleBaseX = X + 30;
+        float triangleBaseY = Y - 30;
 
-        // Calcular la dirección hacia el enemigo
-        float dx = closestEnemy.Position.X - X;
-        float dy = closestEnemy.Position.Y - Y;
-        float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+        // Calcular el ángulo hacia el enemigo más cercano
+        float angle = 0;
+        if (closestEnemy != null)
+        {
+            float dx = closestEnemy.Position.X - triangleBaseX;
+            float dy = closestEnemy.Position.Y - triangleBaseY;
+            angle = (float)(Math.Atan2(dy, dx) * (180 / Math.PI));
+        }
 
-        float directionX = dx / distance;
-        float directionY = dy / distance;
-        float triangleDistance = 40;
+        // Dibujar el rango de disparo (círculo celeste) en la base del triángulo
+        Pen rangePen = new Pen(Color.LightBlue, 1);
+        g.DrawEllipse(rangePen, triangleBaseX - range, triangleBaseY - range, range * 2, range * 2);
+
+        // Guardar el estado de transformación original
+        GraphicsState state = g.Save();
+
+        // Aplicar rotación
+        g.TranslateTransform(triangleBaseX, triangleBaseY); // Mover el origen de rotación al centro del triángulo
+        g.RotateTransform(angle + 90); // Ajustar 90 grados para que la punta apunte al enemigo
+
+        // Coordenadas relativas del triángulo
+        PointF[] trianglePoints = new PointF[]
+        {
+        new PointF(0, -10),    // Punta del triángulo
+        new PointF(-10, 10),   // Esquina izquierda
+        new PointF(10, 10)     // Esquina derecha
+        };
+
+        // Dibujar el triángulo
+        g.FillPolygon(Brushes.DarkBlue, trianglePoints);
 
 
-        float triangleX = X + directionX * triangleDistance;
-        float triangleY = Y + directionY * triangleDistance - 10;
-
-        // Coordenadas de los tres vértices del triángulo
-        PointF p1 = new PointF(triangleX, triangleY);
-        PointF p2 = new PointF(triangleX - 10, triangleY + 20);
-        PointF p3 = new PointF(triangleX + 10, triangleY + 20);
-
-        // Dibujar el triángulo apuntando al enemigo más cercano con color azul oscuro
-        g.FillPolygon(Brushes.DarkBlue, new PointF[] { p1, p2, p3 });
+        // Restaurar el estado original
+        g.Restore(state);
     }
+
 
 }

@@ -1,7 +1,7 @@
 public class OmarBullet : Bullet
 {
     public OmarBullet(PointF startPosition, float directionX, float directionY, int damage)
-        : base(startPosition, directionX, directionY, damage, 12f)  // Velocidad diferente para las balas de Omar
+        : base(startPosition, directionX, directionY, damage, 16f)  // Velocidad diferente para las balas de Omar
     {
     }
 

@@ -14,7 +14,7 @@ public class Spawner
     private int playAreaTop = 45;
     private int playAreaBottom = 805;
     private int diamondRate = 6000;
-    private int enemyRate = 5000;
+    private int enemyRate = 3000;
     private int heartRate = 10000;
 
 
@@ -91,22 +91,22 @@ public class Spawner
 
         if (enemyTypeChance <= 10) // 10% - ShootingEnemy
         {
-            numberOfEnemies = 2; // Siempre 2
+            numberOfEnemies = 2; 
             enemyFactory = spawnPoint => new ShootingEnemy(spawnPoint);
         }
-        else if (enemyTypeChance <= 20) // 10% - SlowEnemy
+        else if (enemyTypeChance <= 20) 
         {
-            numberOfEnemies = random.Next(1, 4); // Entre 1 y 3
+            numberOfEnemies = random.Next(1, 4);
             enemyFactory = spawnPoint => new SlowEnemy(spawnPoint);
         }
-        else if (enemyTypeChance <= 40) // 20% - FastEnemy
+        else if (enemyTypeChance <= 40) 
         {
-            numberOfEnemies = random.Next(3, 6); // Entre 3 y 5
+            numberOfEnemies = random.Next(3, 6);
             enemyFactory = spawnPoint => new FastEnemy(spawnPoint);
         }
         else // 60% - BasicEnemy
         {
-            numberOfEnemies = random.Next(4, 8); // Entre 4 y 7
+            numberOfEnemies = random.Next(4, 8);
             enemyFactory = spawnPoint => new BasicEnemy(spawnPoint);
         }
 
@@ -117,7 +117,7 @@ public class Spawner
 
             enemies.Add(newEnemy);
 
-            await Task.Delay(200); // Pequeña pausa entre spawns
+            await Task.Delay(200); 
         }
 
         spawnMarkers.Remove(centerPoint);
